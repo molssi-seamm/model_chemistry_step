@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-"""Non-graphical part of the Model Chemistry step in a SEAMM flowchart
-"""
+"""Non-graphical part of the Model Chemistry step in a SEAMM flowchart"""
 
 import logging
-from pathlib import Path
 import importlib.resources
-import pprint  # noqa: F401
+import pprint
 
 import model_chemistry_step
 import molsystem
@@ -14,6 +12,9 @@ import seamm
 from seamm_util import ureg, Q_  # noqa: F401
 import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
+import stevedore
+
+from .grammar import parse_model_chemistry
 
 # In addition to the normal logger, two logger-like printing facilities are
 # defined: "job" and "printer". "job" send output to the main job.out file for
@@ -47,9 +48,6 @@ class ModelChemistry(seamm.Node):
         It contains a two item tuple containing the populated namespace and the
         list of remaining argument strings.
 
-    subflowchart : seamm.Flowchart
-        A SEAMM Flowchart object that represents a subflowchart, if needed.
-
     parameters : ModelChemistryParameters
         The control parameters for Model Chemistry.
 
@@ -60,11 +58,7 @@ class ModelChemistry(seamm.Node):
     """
 
     def __init__(
-        self,
-        flowchart=None,
-        title="Model Chemistry",
-        extension=None,
-        logger=logger
+        self, flowchart=None, title="Model Chemistry", extension=None, logger=logger
     ):
         """A step for Model Chemistry in a SEAMM flowchart.
 
@@ -128,12 +122,77 @@ class ModelChemistry(seamm.Node):
         if not P:
             P = self.parameters.values_to_dict()
 
-        text = (
-            "Please replace this with a short summary of the "
-            "Model Chemistry step, including key parameters."
-        )
+        text = "Provide the model chemistry '{model_chemistry}' to subsequent steps"
+        if P["periodic"] == "yes":
+            text += ", considering only model chemistries that support periodic systems"
+        text += "."
 
         return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
+
+    def model_chemistries(self, periodic_only=False, mdi_only=False):
+        """Discover the model chemistries offered by the installed program steps.
+
+        Each program plug-in (e.g. ``mopac_step``) may expose a
+        ``get_model_chemistry_options()`` classmethod on its helper class. This
+        method iterates the ``org.molssi.seamm`` Stevedore namespace, calls that
+        method on every helper that defines it, and returns the union keyed by
+        the canonical model-chemistry string.
+
+        Parameters
+        ----------
+        periodic_only : bool
+            Only return model chemistries validated for periodic systems.
+        mdi_only : bool
+            Only return model chemistries launchable via MDI.
+
+        Returns
+        -------
+        dict
+            Keyed by the canonical ``Program:Type@Method[/Basis[@Cutoff]]``
+            string. Each value is a ``_model_chemistry`` wrapper::
+
+                {
+                    # parsed components: program/type/method/basis/cutoff
+                    **parse_model_chemistry(key),
+                    "step": "<stevedore plugin name>",   # resolution handle
+                    "options": { ... full get_model_chemistry_options() entry },
+                }
+        """
+        result = {}
+        mgr = stevedore.ExtensionManager(
+            namespace="org.molssi.seamm",
+            invoke_on_load=False,
+            on_load_failure_callback=lambda m, ep, err: logger.warning(
+                "Could not load step plug-in %r: %s", ep.name, err
+            ),
+        )
+        for ext in mgr:
+            getter = getattr(ext.plugin, "get_model_chemistry_options", None)
+            if getter is None:
+                continue
+            try:
+                options = getter(periodic_only=periodic_only, mdi_only=mdi_only)
+            except Exception as e:
+                logger.warning(
+                    "%s.get_model_chemistry_options() failed: %s", ext.name, e
+                )
+                continue
+            for option in options.values():
+                key = option["model_chemistry"]
+                if key in result:
+                    logger.warning(
+                        "Model chemistry %s offered by more than one step; "
+                        "keeping the one from '%s'.",
+                        key,
+                        result[key]["step"],
+                    )
+                    continue
+                result[key] = {
+                    **parse_model_chemistry(key),
+                    "step": ext.name,
+                    "options": option,
+                }
+        return result
 
     def run(self):
         """Run a Model Chemistry step.
@@ -148,6 +207,7 @@ class ModelChemistry(seamm.Node):
             The next node object in the flowchart.
         """
         next_node = super().run(printer)
+
         # Get the values of the parameters, dereferencing any variables
         P = self.parameters.current_values_to_dict(
             context=seamm.flowchart_variables._data
@@ -156,40 +216,34 @@ class ModelChemistry(seamm.Node):
         # Print what we are doing
         printer.important(__(self.description_text(P), indent=self.indent))
 
-        directory = Path(self.directory)
-        directory.mkdir(parents=True, exist_ok=True)
+        periodic = P["periodic"] == "yes"
+        selected = P["model_chemistry"]
 
-        # Get the current system and configuration (ignoring the system...)
-        _, configuration = self.get_system_configuration(None)
-
-        # Results data
-        data = {}
-
-        # Temporary code just to print the parameters. You will need to change
-        # this!
-        for key in P:
-            print("{:>15s} = {}".format(key, P[key]))
-            printer.normal(
-                __(
-                    "{key:>15s} = {value}",
-                    key=key,
-                    value=P[key],
-                    indent=4 * " ",
-                    wrap=False,
-                    dedent=False,
+        # Discover what the installed program plug-ins offer, then validate the
+        # selection against it before publishing it for downstream steps.
+        available = self.model_chemistries(periodic_only=periodic, mdi_only=False)
+        if selected not in available:
+            if len(available) == 0:
+                raise ValueError(
+                    f"The model chemistry '{selected}' is not available: no "
+                    "installed program plug-in offers a model chemistry"
+                    + (" for periodic systems." if periodic else ".")
                 )
+            raise ValueError(
+                f"The model chemistry '{selected}' is not available"
+                + (" for periodic systems" if periodic else "")
+                + ". The available model chemistries are: "
+                + ", ".join(sorted(available))
+                + "."
             )
 
-        # Analyze the results
-        self.analyze()
-        # Put any requested results into variables or tables
-        self.store_results(
-            configuration=configuration,
-            data=data,
-        )
-        # Add other citations here or in the appropriate place in the code.
-        # Add the bibtex to data/references.bib, and add a self.reference.cite
-        # similar to the above to actually add the citation to the references.
+        model_chemistry = available[selected]
+
+        # Publish it as a workspace variable for downstream steps (e.g. LAMMPS),
+        # mirroring how the Forcefield step provides "_forcefield".
+        self.set_variable("_model_chemistry", model_chemistry)
+
+        logger.debug("Stored _model_chemistry:\n%s", pprint.pformat(model_chemistry))
 
         return next_node
 

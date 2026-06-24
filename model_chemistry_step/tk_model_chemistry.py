@@ -1,14 +1,33 @@
 # -*- coding: utf-8 -*-
 
-"""The graphical part of a Model Chemistry step"""
+"""The graphical part of a Model Chemistry step.
 
-import pprint  # noqa: F401
-import tkinter as tk  # noqa: F401
+The step persists a single canonical model-chemistry string
+(``Program:Type@Method[/Basis[@Cutoff]]``) in the ``model_chemistry``
+parameter. The dialog presents it as a cascading set of selectors --
+**Type -> Method -> Program** -- plus a periodic-system filter:
 
-import model_chemistry_step  # noqa: F401
+* on open, the stored string is decomposed (``parse_model_chemistry``) to
+  preset the three selectors;
+* the choices are discovered live from the installed program steps
+  (``node.model_chemistries(...)``), narrowed by the periodic filter;
+* Type narrows Method narrows Program; Program auto-selects when only one
+  program implements the chosen ``Type@Method``;
+* on *OK*, the three selections are recomposed (``compose_model_chemistry``)
+  back into the ``model_chemistry`` parameter.
+"""
+
+import logging
+import tkinter as tk
+
 import seamm
-from seamm_util import ureg, Q_, units_class  # noqa: F401
 import seamm_widgets as sw
+
+from .grammar import parse_model_chemistry
+
+logger = logging.getLogger(__name__)
+
+_CASCADE = ("periodic", "type", "method", "program")
 
 
 class TkModelChemistry(seamm.TkNode):
@@ -23,8 +42,6 @@ class TkModelChemistry(seamm.TkNode):
         The corresponding node of the non-graphical flowchart
     namespace : str
         The namespace of the current step.
-    tk_subflowchart : TkFlowchart
-        A graphical Flowchart representing a subflowchart
     canvas: tkCanvas = None
         The Tk Canvas to draw on
     dialog : Dialog
@@ -66,8 +83,6 @@ class TkModelChemistry(seamm.TkNode):
             The graphical flowchart that we are in.
         node: Node
             The non-graphical node for this step.
-        namespace: str
-            The stevedore namespace for finding sub-nodes.
         canvas: Canvas
            The Tk canvas to draw on.
         x: float
@@ -85,6 +100,10 @@ class TkModelChemistry(seamm.TkNode):
         """
         self.dialog = None
 
+        # The model chemistries discovered for the current periodic filter,
+        # keyed by canonical string (refreshed when the filter changes).
+        self._model_chemistries = {}
+
         super().__init__(
             tk_flowchart=tk_flowchart,
             node=node,
@@ -96,18 +115,12 @@ class TkModelChemistry(seamm.TkNode):
         )
 
     def create_dialog(self):
-        """
-        Create the dialog. A set of widgets will be chosen by default
-        based on what is specified in the Model Chemistry_parameters
-        module.
+        """Create the dialog for editing the Model Chemistry step.
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
+        The periodic filter is a normal parameter widget, so the base class
+        captures it on *OK*. Type/Method/Program are GUI-only comboboxes; the
+        canonical ``model_chemistry`` string is composed from them in
+        :meth:`handle_dialog`.
 
         See Also
         --------
@@ -115,76 +128,175 @@ class TkModelChemistry(seamm.TkNode):
         """
 
         frame = super().create_dialog(title="Model Chemistry")
-        # Shortcut for parameters
         P = self.node.parameters
 
-        # Then create the widgets
-        for key in P:
-            if key[0] != "_" and key not in (
-                "results",
-                "extra keywords",
-                "create tables",
-            ):
-                self[key] = P[key].widget(frame)
+        # The periodic filter -- a real parameter, so it is saved automatically.
+        self["periodic"] = P["periodic"].widget(frame)
+        self["periodic"].config(state="readonly")
 
-        # and lay them out
+        # The cascading selectors (GUI-only; not bound to a parameter).
+        self["type"] = sw.LabeledCombobox(frame, labeltext="Type:", state="readonly")
+        self["method"] = sw.LabeledCombobox(
+            frame, labeltext="Method:", state="readonly"
+        )
+        self["program"] = sw.LabeledCombobox(
+            frame, labeltext="Program:", state="readonly"
+        )
+
+        # Changing the filter re-discovers; changing a level cascades downward.
+        self["periodic"].combobox.bind("<<ComboboxSelected>>", self._filter_changed)
+        self["type"].combobox.bind("<<ComboboxSelected>>", self._type_changed)
+        self["method"].combobox.bind("<<ComboboxSelected>>", self._method_changed)
+
         self.reset_dialog()
 
+    def edit(self):
+        """Present the dialog, presetting the selectors from the stored value."""
+        if self.dialog is None:
+            self.create_dialog()
+
+        self._load_from_parameter()
+        self.reset_dialog()
+        self.fit_dialog()
+
+        super().edit()
+
     def reset_dialog(self, widget=None):
-        """Layout the widgets in the dialog.
-
-        The widgets are chosen by default from the information in
-        Model Chemistry_parameter.
-
-        This function simply lays them out row by row with
-        aligned labels. You may wish a more complicated layout that
-        is controlled by values of some of the control parameters.
-        If so, edit or override this method
+        """Lay out the widgets: the periodic filter, then Type/Method/Program.
 
         Parameters
         ----------
         widget : Tk Widget = None
 
-        Returns
-        -------
-        None
-
         See Also
         --------
         TkModelChemistry.create_dialog
         """
-
-        # Remove any widgets previously packed
         frame = self["frame"]
         for slave in frame.grid_slaves():
             slave.grid_forget()
 
-        # Shortcut for parameters
-        P = self.node.parameters
-
-        # keep track of the row in a variable, so that the layout is flexible
-        # if e.g. rows are skipped to control such as "method" here
         row = 0
-        widgets = []
-        for key in P:
-            if key[0] != "_" and key not in (
-                "results",
-                "extra keywords",
-                "create tables",
-            ):
-                self[key].grid(row=row, column=0, sticky=tk.EW)
-                widgets.append(self[key])
-                row += 1
+        for key in _CASCADE:
+            self[key].grid(row=row, column=0, sticky=tk.EW)
+            row += 1
 
-        # Align the labels
-        sw.align_labels(widgets, sticky=tk.E)
+        sw.align_labels([self[key] for key in _CASCADE], sticky=tk.E)
 
-        # Setup the results if there are any
-        have_results = (
-            "results" in self.node.metadata and len(self.node.metadata["results"]) > 0
+        return row
+
+    def handle_dialog(self, result):
+        """On *OK*, compose the canonical model-chemistry string from the
+        Type/Method/Program selectors and store it in the ``model_chemistry``
+        parameter before the base class captures the periodic filter.
+
+        Parameters
+        ----------
+        result : str
+            The button that closed the dialog (``"OK"``, ``"Cancel"``, ...).
+        """
+        if result == "OK":
+            type_ = self["type"].get()
+            method = self["method"].get()
+            program = self["program"].get()
+            if type_ and method and program:
+                # Store the actual discovered canonical string (which carries
+                # any basis/cutoff) rather than recomposing from the three
+                # selectors, so the stored value always validates in run().
+                matches = [
+                    w["model_chemistry"]
+                    for w in self._model_chemistries.values()
+                    if w["program"] == program
+                    and w["type"] == type_
+                    and w["method"] == method
+                ]
+                if matches:
+                    self.node.parameters["model_chemistry"].value = matches[0]
+
+        super().handle_dialog(result)
+
+    # ----------------------------------------------------------------- #
+    # Discovery + cascade helpers
+    # ----------------------------------------------------------------- #
+
+    def _discover(self):
+        """Refresh the discovered model chemistries for the current filter."""
+        periodic = self["periodic"].get() == "yes"
+        self._model_chemistries = self.node.model_chemistries(periodic_only=periodic)
+
+    def _types(self):
+        return sorted({w["type"] for w in self._model_chemistries.values()})
+
+    def _methods(self, type_):
+        return sorted(
+            {
+                w["method"]
+                for w in self._model_chemistries.values()
+                if w["type"] == type_
+            }
         )
-        if have_results and "results" in P:
-            self.setup_results()
+
+    def _programs(self, type_, method):
+        return sorted(
+            {
+                w["program"]
+                for w in self._model_chemistries.values()
+                if w["type"] == type_ and w["method"] == method
+            }
+        )
+
+    def _cascade(self, type_=None, method=None, program=None):
+        """Repopulate the three comboboxes, keeping valid selections and
+        falling back to the first available choice when one is no longer
+        valid (so each level always has a consistent selection below it)."""
+        types = self._types()
+        self["type"].combobox.configure(values=types)
+        if type_ not in types:
+            type_ = types[0] if types else ""
+        self["type"].set(type_)
+
+        methods = self._methods(type_)
+        self["method"].combobox.configure(values=methods)
+        if method not in methods:
+            method = methods[0] if methods else ""
+        self["method"].set(method)
+
+        programs = self._programs(type_, method)
+        self["program"].combobox.configure(values=programs)
+        if program not in programs:
+            program = programs[0] if programs else ""
+        self["program"].set(program)
+
+    def _load_from_parameter(self):
+        """Preset the selectors by decomposing the stored canonical string."""
+        selected = self.node.parameters["model_chemistry"].value
+        type_ = method = program = None
+        if isinstance(selected, str) and not self.is_expr(selected):
+            try:
+                components = parse_model_chemistry(selected)
+            except ValueError:
+                pass
+            else:
+                type_ = components["type"]
+                method = components["method"]
+                program = components["program"]
+
+        self._discover()
+        self._cascade(type_, method, program)
+
+    def _filter_changed(self, event=None):
+        """The periodic filter changed: re-discover, keeping selections if they
+        survive the new filter."""
+        self._discover()
+        self._cascade(self["type"].get(), self["method"].get(), self["program"].get())
+
+    def _type_changed(self, event=None):
+        """Type changed: reset Method and Program to the first available."""
+        self._cascade(self["type"].get(), None, None)
+
+    def _method_changed(self, event=None):
+        """Method changed: reset Program to the first available."""
+        self._cascade(self["type"].get(), self["method"].get(), None)
 
     def right_click(self, event):
         """
