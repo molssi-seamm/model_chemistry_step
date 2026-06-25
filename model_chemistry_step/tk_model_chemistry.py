@@ -2,18 +2,19 @@
 
 """The graphical part of a Model Chemistry step.
 
-The step persists a single canonical model-chemistry string
-(``Program:Type@Method[/Basis[@Cutoff]]``) in the ``model_chemistry``
-parameter. The dialog presents it as a cascading set of selectors --
-**Type -> Method -> Program** -- plus a periodic-system filter:
+The step persists a single **level spec** (``[owner:]type@method[/basis
+[@cutoff]]``) in the ``model_chemistry`` parameter -- the level of theory, with
+no driver or task (those belong to the consuming step). The dialog presents it
+as a cascading set of selectors -- **Type -> Method -> Program** (where Program
+is the PES *owner*) -- plus a periodic-system filter:
 
-* on open, the stored string is decomposed (``parse_model_chemistry``) to
-  preset the three selectors;
+* on open, the stored level spec is decomposed (``parse_level``) to preset the
+  three selectors;
 * the choices are discovered live from the installed program steps
   (``node.model_chemistries(...)``), narrowed by the periodic filter;
 * Type narrows Method narrows Program; Program auto-selects when only one
-  program implements the chosen ``Type@Method``;
-* on *OK*, the three selections are recomposed (``compose_model_chemistry``)
+  program implements the chosen ``type@method``;
+* on *OK*, the discovered level spec matching the three selections is stored
   back into the ``model_chemistry`` parameter.
 """
 
@@ -23,7 +24,7 @@ import tkinter as tk
 import seamm
 import seamm_widgets as sw
 
-from .grammar import parse_model_chemistry
+from .grammar import parse_level
 
 logger = logging.getLogger(__name__)
 
@@ -204,9 +205,9 @@ class TkModelChemistry(seamm.TkNode):
                 # any basis/cutoff) rather than recomposing from the three
                 # selectors, so the stored value always validates in run().
                 matches = [
-                    w["model_chemistry"]
+                    w["level"]
                     for w in self._model_chemistries.values()
-                    if w["program"] == program
+                    if w["owner"] == program
                     and w["type"] == type_
                     and w["method"] == method
                 ]
@@ -239,7 +240,7 @@ class TkModelChemistry(seamm.TkNode):
     def _programs(self, type_, method):
         return sorted(
             {
-                w["program"]
+                w["owner"]
                 for w in self._model_chemistries.values()
                 if w["type"] == type_ and w["method"] == method
             }
@@ -273,13 +274,13 @@ class TkModelChemistry(seamm.TkNode):
         type_ = method = program = None
         if isinstance(selected, str) and not self.is_expr(selected):
             try:
-                components = parse_model_chemistry(selected)
+                components = parse_level(selected)
             except ValueError:
                 pass
             else:
                 type_ = components["type"]
                 method = components["method"]
-                program = components["program"]
+                program = components["owner"]
 
         self._discover()
         self._cascade(type_, method, program)

@@ -14,7 +14,7 @@ import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import stevedore
 
-from .grammar import parse_model_chemistry
+from .grammar import parse_level
 
 # In addition to the normal logger, two logger-like printing facilities are
 # defined: "job" and "printer". "job" send output to the main job.out file for
@@ -148,15 +148,20 @@ class ModelChemistry(seamm.Node):
         Returns
         -------
         dict
-            Keyed by the canonical ``Program:Type@Method[/Basis[@Cutoff]]``
+            Keyed by the advertised **level spec** ``[owner:]type@method``
             string. Each value is a ``_model_chemistry`` wrapper::
 
                 {
-                    # parsed components: program/type/method/basis/cutoff
-                    **parse_model_chemistry(key),
+                    "level": key,                        # the level spec
+                    "owner": ..., "type": ..., "method": ...,  # parse_level(key)
+                    "basis": ..., "cutoff": ...,
                     "step": "<stevedore plugin name>",   # resolution handle
                     "options": { ... full get_model_chemistry_options() entry },
                 }
+
+            A program step advertises *level specs* only (it knows its levels
+            of theory, not the task); the consuming step supplies the driver
+            and task. See ``model_chemistry_naming.rst``.
         """
         result = {}
         mgr = stevedore.ExtensionManager(
@@ -187,8 +192,14 @@ class ModelChemistry(seamm.Node):
                         result[key]["step"],
                     )
                     continue
+                parsed = parse_level(key)
                 result[key] = {
-                    **parse_model_chemistry(key),
+                    "level": parsed["level"],
+                    "owner": parsed["owner"],
+                    "type": parsed["type"],
+                    "method": parsed["method"],
+                    "basis": parsed["basis"],
+                    "cutoff": parsed["cutoff"],
                     "step": ext.name,
                     "options": option,
                 }

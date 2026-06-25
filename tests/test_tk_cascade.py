@@ -12,7 +12,7 @@ with no Tk root.
 import seamm
 
 from model_chemistry_step.tk_model_chemistry import TkModelChemistry
-from model_chemistry_step.grammar import parse_model_chemistry
+from model_chemistry_step.grammar import parse_level
 
 # --------------------------------------------------------------------------- #
 # Fakes
@@ -78,8 +78,14 @@ class _FakeTk(TkModelChemistry):
 
 
 def _wrap(key, step):
+    parsed = parse_level(key)
     return {
-        **parse_model_chemistry(key),
+        "level": parsed["level"],
+        "owner": parsed["owner"],
+        "type": parsed["type"],
+        "method": parsed["method"],
+        "basis": parsed["basis"],
+        "cutoff": parsed["cutoff"],
         "step": step,
         "options": {"model_chemistry": key},
     }

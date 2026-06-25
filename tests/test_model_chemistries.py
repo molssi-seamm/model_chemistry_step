@@ -139,16 +139,16 @@ def test_wrapper_has_the_full_model_chemistry_contract(monkeypatch):
     w = ModelChemistry().model_chemistries()["VASP:DFT@PBE/PAW@500eV"]
 
     assert set(w) == {
-        "program",
+        "owner",
         "type",
         "method",
         "basis",
         "cutoff",
-        "model_chemistry",
+        "level",
         "step",
         "options",
     }
-    assert (w["program"], w["type"], w["method"]) == ("VASP", "DFT", "PBE")
+    assert (w["owner"], w["type"], w["method"]) == ("VASP", "DFT", "PBE")
     assert (w["basis"], w["cutoff"]) == ("PAW", "500eV")
     assert w["step"] == "vasp"
     assert w["options"] is opts  # carried through unchanged
@@ -207,7 +207,7 @@ def test_real_discovery_finds_mopac():
     assert "MOPAC:SQM@PM6-ORG" in result
     w = result["MOPAC:SQM@PM6-ORG"]
     assert w["step"] == "MOPAC"
-    assert (w["program"], w["type"], w["method"]) == ("MOPAC", "SQM", "PM6-ORG")
+    assert (w["owner"], w["type"], w["method"]) == ("MOPAC", "SQM", "PM6-ORG")
 
 
 def test_real_discovery_matches_mopac_options_directly():
@@ -242,7 +242,8 @@ def test_run_stores_the_selected_model_chemistry(make_node):
     node.run()
 
     stored = node.get_variable("_model_chemistry")
-    assert stored["model_chemistry"] == "MOPAC:SQM@PM6-ORG"
+    assert stored["level"] == "MOPAC:SQM@PM6-ORG"
+    assert stored["owner"] == "MOPAC"
     assert stored["step"] == "MOPAC"
     assert stored["method"] == "PM6-ORG"
     assert stored["options"]["mdi_capable"] is True
@@ -252,9 +253,7 @@ def test_run_periodic_filter_allows_a_validated_method(make_node):
     """PM6-ORG is periodic-validated, so it is accepted under periodic=yes."""
     node = make_node("MOPAC:SQM@PM6-ORG", periodic="yes")
     node.run()
-    assert (
-        node.get_variable("_model_chemistry")["model_chemistry"] == "MOPAC:SQM@PM6-ORG"
-    )
+    assert node.get_variable("_model_chemistry")["level"] == "MOPAC:SQM@PM6-ORG"
 
 
 def test_run_periodic_filter_rejects_a_non_validated_method(make_node):
@@ -275,5 +274,7 @@ def test_run_rejects_an_unknown_model_chemistry(make_node):
 def test_grammar_is_reexported_from_the_package():
     """The grammar helpers are available at the package top level for
     consumers (LAMMPS, program steps)."""
+    assert hasattr(model_chemistry_step, "parse_level")
     assert hasattr(model_chemistry_step, "parse_model_chemistry")
     assert hasattr(model_chemistry_step, "compose_model_chemistry")
+    assert hasattr(model_chemistry_step, "comparability_key")
