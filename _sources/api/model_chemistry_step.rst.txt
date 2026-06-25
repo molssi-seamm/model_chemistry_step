@@ -1,0 +1,61 @@
+model\_chemistry\_step package
+==============================
+
+Submodules
+----------
+
+model\_chemistry\_step.grammar module
+-------------------------------------
+
+.. automodule:: model_chemistry_step.grammar
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+model\_chemistry\_step.metadata module
+--------------------------------------
+
+.. automodule:: model_chemistry_step.metadata
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+model\_chemistry\_step.model\_chemistry module
+----------------------------------------------
+
+.. automodule:: model_chemistry_step.model_chemistry
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+model\_chemistry\_step.model\_chemistry\_parameters module
+----------------------------------------------------------
+
+.. automodule:: model_chemistry_step.model_chemistry_parameters
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+model\_chemistry\_step.model\_chemistry\_step module
+----------------------------------------------------
+
+.. automodule:: model_chemistry_step.model_chemistry_step
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+model\_chemistry\_step.tk\_model\_chemistry module
+--------------------------------------------------
+
+.. automodule:: model_chemistry_step.tk_model_chemistry
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: model_chemistry_step
+   :members:
+   :show-inheritance:
+   :undoc-members:
