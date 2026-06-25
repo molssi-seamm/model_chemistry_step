@@ -13,6 +13,13 @@ from .model_chemistry_parameters import ModelChemistryParameters  # noqa: F401, 
 from .model_chemistry_step import ModelChemistryStep  # noqa: F401, E501
 from .tk_model_chemistry import TkModelChemistry  # noqa: F401, E501
 
+from .grammar import (  # noqa: F401
+    parse_level,
+    parse_model_chemistry,
+    compose_model_chemistry,
+    comparability_key,
+)
+
 from .metadata import metadata  # noqa: F401
 
 # Handle versioneer

@@ -10,4 +10,7 @@ import model_chemistry_step  # noqa: F401
 def test_construction():
     """Just create an object and test its type."""
     result = model_chemistry_step.ModelChemistry()
-    assert str(type(result)) == "<class 'model_chemistry_step.model_chemistry.ModelChemistry'>"
+    assert (
+        str(type(result))
+        == "<class 'model_chemistry_step.model_chemistry.ModelChemistry'>"
+    )

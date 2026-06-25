@@ -70,18 +70,36 @@ class ModelChemistryParameters(seamm.Parameters):
 
     See Also
     --------
-    ModelChemistry, TkModelChemistry, ModelChemistry ModelChemistryParameters, Model ChemistryStep
+    ModelChemistry, TkModelChemistry, ModelChemistryParameters, Model ChemistryStep
     """
 
     parameters = {
-        "time": {
-            "default": 100.0,
-            "kind": "float",
-            "default_units": "ps",
+        "model_chemistry": {
+            "default": "MOPAC:SQM@PM6-ORG",
+            "kind": "string",
+            "default_units": "",
             "enumeration": tuple(),
-            "format_string": ".1f",
-            "description": "Simulation time:",
-            "help_text": ("The time to simulate in the dynamics run."),
+            "format_string": "",
+            "description": "Model chemistry:",
+            "help_text": (
+                "The model chemistry to provide to subsequent steps, given as "
+                "the canonical string 'Program:Type@Method[/Basis[@Cutoff]]'. "
+                "The available choices are discovered from the installed program "
+                "plug-ins."
+            ),
+        },
+        "periodic": {
+            "default": "no",
+            "kind": "enum",
+            "default_units": "",
+            "enumeration": ("yes", "no"),
+            "format_string": "s",
+            "description": "Periodic system:",
+            "help_text": (
+                "Whether the model chemistry must support periodic systems. If "
+                "'yes', only model chemistries validated for periodic systems "
+                "are offered."
+            ),
         },
         # # Results handling ... uncomment if needed
         # "results": {
