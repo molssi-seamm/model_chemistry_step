@@ -101,6 +101,20 @@ class ModelChemistryParameters(seamm.Parameters):
                 "are offered."
             ),
         },
+        "basis elements": {
+            "default": "",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Basis elements:",
+            "help_text": (
+                "GUI-only: the elements (comma-separated symbols) last selected "
+                "in the basis-set picker, remembered so the picker can be "
+                "reconstructed. Not used when running; the basis itself is part "
+                "of the model-chemistry string."
+            ),
+        },
         # # Results handling ... uncomment if needed
         # "results": {
         #     "default": {},

@@ -41,6 +41,28 @@ class _Combo:
             self.values = list(values)
 
 
+class _BasisField:
+    """Stand-in for seamm_widgets.BasisSetField: dict value of name + elements."""
+
+    def __init__(self):
+        self._name = ""
+        self._elements = []
+
+    def set(self, value):
+        if isinstance(value, dict):
+            self._name = value.get("name", "") or ""
+            self._elements = list(value.get("elements", []) or [])
+        else:
+            self._name = "" if value is None else str(value)
+            self._elements = []
+
+    def get(self):
+        return {"name": self._name, "elements": list(self._elements)}
+
+    def get_name(self):
+        return self._name
+
+
 class _Param:
     def __init__(self, value=None):
         self.value = value
@@ -48,7 +70,10 @@ class _Param:
 
 class _Node:
     def __init__(self, model_chemistry=None):
-        self.parameters = {"model_chemistry": _Param(model_chemistry)}
+        self.parameters = {
+            "model_chemistry": _Param(model_chemistry),
+            "basis elements": _Param(""),
+        }
 
 
 class _FakeTk(TkModelChemistry):
@@ -67,11 +92,16 @@ class _FakeTk(TkModelChemistry):
             "type": _Combo(),
             "method": _Combo(),
             "program": _Combo(),
+            "basis": _BasisField(),  # stands in for the BasisSetField
         }
         self.node = _Node(model_chemistry)
 
     def __getitem__(self, key):
         return self._widgets[key]
+
+    def reset_dialog(self, widget=None):
+        # The real one grids widgets; layout is irrelevant to the cascade logic.
+        return 0
 
     def is_expr(self, value):
         return isinstance(value, str) and value.startswith("$")
@@ -171,7 +201,7 @@ def test_cascade_handles_empty_discovery():
 def _record_cascade(fs):
     calls = []
     fs._discover = lambda: None
-    fs._cascade = lambda t, m, p: calls.append((t, m, p))
+    fs._cascade = lambda t, m, p, b=None: calls.append((t, m, p, b))
     return calls
 
 
@@ -179,21 +209,21 @@ def test_load_decomposes_a_canonical_string():
     fs = _FakeTk(SAMPLE, model_chemistry="Psi4:DFT@B3LYP/def2-SVP")
     calls = _record_cascade(fs)
     TkModelChemistry._load_from_parameter(fs)
-    assert calls == [("DFT", "B3LYP", "Psi4")]
+    assert calls == [("DFT", "B3LYP", "Psi4", "def2-SVP")]
 
 
 def test_load_leaves_selectors_unset_for_an_expression():
     fs = _FakeTk(SAMPLE, model_chemistry="$MODEL_CHEMISTRY")
     calls = _record_cascade(fs)
     TkModelChemistry._load_from_parameter(fs)
-    assert calls == [(None, None, None)]
+    assert calls == [(None, None, None, None)]
 
 
 def test_load_leaves_selectors_unset_for_an_unparseable_string():
     fs = _FakeTk(SAMPLE, model_chemistry="garbage-no-delimiters")
     calls = _record_cascade(fs)
     TkModelChemistry._load_from_parameter(fs)
-    assert calls == [(None, None, None)]
+    assert calls == [(None, None, None, None)]
 
 
 # --------------------------------------------------------------------------- #
@@ -213,18 +243,32 @@ def test_ok_stores_the_discovered_canonical_string(monkeypatch):
     assert fs.node.parameters["model_chemistry"].value == "MOPAC:SQM@PM6-ORG"
 
 
-def test_ok_keeps_basis_and_cutoff_via_the_discovered_key(monkeypatch):
-    """Choosing Psi4 DFT B3LYP must store the full key with its basis, not a
-    recomposed Program:Type@Method that drops it."""
+def test_ok_composes_level_with_the_basis_field(monkeypatch):
+    """For a basis-using level, OK composes owner:type@method/<basis field>."""
     monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
     fs = _FakeTk(SAMPLE)
     fs["type"].set("DFT")
     fs["method"].set("B3LYP")
     fs["program"].set("Psi4")
+    fs["basis"].set("def2-SVP")
 
     TkModelChemistry.handle_dialog(fs, "OK")
 
     assert fs.node.parameters["model_chemistry"].value == "Psi4:DFT@B3LYP/def2-SVP"
+
+
+def test_ok_allows_a_basis_beyond_the_advertised_set(monkeypatch):
+    """The basis is the user's free choice; a bse: pick composes into the level."""
+    monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
+    fs = _FakeTk(SAMPLE)
+    fs["type"].set("DFT")
+    fs["method"].set("B3LYP")
+    fs["program"].set("Psi4")
+    fs["basis"].set("bse:cc-pVQZ")
+
+    TkModelChemistry.handle_dialog(fs, "OK")
+
+    assert fs.node.parameters["model_chemistry"].value == "Psi4:DFT@B3LYP/bse:cc-pVQZ"
 
 
 def test_cancel_does_not_change_the_parameter(monkeypatch):

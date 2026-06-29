@@ -143,11 +143,17 @@ class TkModelChemistry(seamm.TkNode):
         self["program"] = sw.LabeledCombobox(
             frame, labeltext="Program:", state="readonly"
         )
+        # The basis set -- a shared widget (entry/list + '...' to the Basis Set
+        # Exchange). Shown only for levels of theory that use a basis (HF, DFT,
+        # MP2, coupled cluster); hidden for SQM/FF/MLFF.
+        self["basis"] = sw.BasisSetField(frame, labeltext="Basis set:")
+        self["basis"].elements_callback = self._current_elements
 
         # Changing the filter re-discovers; changing a level cascades downward.
         self["periodic"].combobox.bind("<<ComboboxSelected>>", self._filter_changed)
         self["type"].combobox.bind("<<ComboboxSelected>>", self._type_changed)
         self["method"].combobox.bind("<<ComboboxSelected>>", self._method_changed)
+        self["program"].combobox.bind("<<ComboboxSelected>>", self._program_changed)
 
         self.reset_dialog()
 
@@ -182,7 +188,16 @@ class TkModelChemistry(seamm.TkNode):
             self[key].grid(row=row, column=0, sticky=tk.EW)
             row += 1
 
-        sw.align_labels([self[key] for key in _CASCADE], sticky=tk.E)
+        shown = list(_CASCADE)
+        # Show the basis only for a level of theory that uses one.
+        if self._needs_basis(
+            self["type"].get(), self["method"].get(), self["program"].get()
+        ):
+            self["basis"].grid(row=row, column=0, sticky=tk.EW)
+            shown.append("basis")
+            row += 1
+
+        sw.align_labels([self[key] for key in shown], sticky=tk.E)
 
         return row
 
@@ -201,18 +216,20 @@ class TkModelChemistry(seamm.TkNode):
             method = self["method"].get()
             program = self["program"].get()
             if type_ and method and program:
-                # Store the actual discovered canonical string (which carries
-                # any basis/cutoff) rather than recomposing from the three
-                # selectors, so the stored value always validates in run().
-                matches = [
-                    w["level"]
-                    for w in self._model_chemistries.values()
-                    if w["owner"] == program
-                    and w["type"] == type_
-                    and w["method"] == method
-                ]
-                if matches:
-                    self.node.parameters["model_chemistry"].value = matches[0]
+                # Compose the level spec from the selectors plus the chosen basis.
+                # The owner/type/method must be one a program offers (run()
+                # validates this); the basis is the user's free choice.
+                level = f"{program}:{type_}@{method}"
+                elements = ""
+                if self._needs_basis(type_, method, program):
+                    basis = self["basis"].get_name().strip()
+                    if basis:
+                        level += f"/{basis}"
+                        # Remember the picker's element selection so it can be
+                        # reconstructed on reopen (GUI-only; not used in run()).
+                        elements = ",".join(self["basis"].get()["elements"])
+                self.node.parameters["model_chemistry"].value = level
+                self.node.parameters["basis elements"].value = elements
 
         super().handle_dialog(result)
 
@@ -246,10 +263,39 @@ class TkModelChemistry(seamm.TkNode):
             }
         )
 
-    def _cascade(self, type_=None, method=None, program=None):
+    def _needs_basis(self, type_, method, program):
+        """Whether the offered level of theory uses a basis (data-driven: any
+        matching discovered option carries one)."""
+        return bool(self._default_basis(type_, method, program))
+
+    def _default_basis(self, type_, method, program):
+        """An example basis a program advertises for this owner/type/method, or
+        ``""`` if it uses none."""
+        for w in self._model_chemistries.values():
+            if (
+                w["type"] == type_
+                and w["method"] == method
+                and (not program or w["owner"] == program)
+                and w.get("basis")
+            ):
+                return w["basis"]
+        return ""
+
+    def _current_elements(self):
+        """Element symbols in the current configuration, to preselect in the
+        Basis Set Exchange dialog. Best-effort: empty if there is none yet."""
+        try:
+            _, configuration = self.node.get_system_configuration(None)
+            return sorted(set(configuration.atoms.symbols))
+        except Exception:
+            return []
+
+    def _cascade(self, type_=None, method=None, program=None, basis=None):
         """Repopulate the three comboboxes, keeping valid selections and
         falling back to the first available choice when one is no longer
-        valid (so each level always has a consistent selection below it)."""
+        valid (so each level always has a consistent selection below it). The
+        basis field is seeded with the advertised default (or the passed value)
+        and the layout refreshed so it shows only when the level uses a basis."""
         types = self._types()
         self["type"].combobox.configure(values=types)
         if type_ not in types:
@@ -268,10 +314,18 @@ class TkModelChemistry(seamm.TkNode):
             program = programs[0] if programs else ""
         self["program"].set(program)
 
+        # Seed the basis: the caller's value (e.g. the stored one) wins, else the
+        # program's advertised default for this level.
+        if self._needs_basis(type_, method, program):
+            self["basis"].set(basis or self._default_basis(type_, method, program))
+        else:
+            self["basis"].set("")
+        self.reset_dialog()
+
     def _load_from_parameter(self):
         """Preset the selectors by decomposing the stored canonical string."""
         selected = self.node.parameters["model_chemistry"].value
-        type_ = method = program = None
+        type_ = method = program = basis = None
         if isinstance(selected, str) and not self.is_expr(selected):
             try:
                 components = parse_level(selected)
@@ -281,23 +335,40 @@ class TkModelChemistry(seamm.TkNode):
                 type_ = components["type"]
                 method = components["method"]
                 program = components["owner"]
+                basis = components["basis"]
 
         self._discover()
-        self._cascade(type_, method, program)
+        self._cascade(type_, method, program, basis)
+
+        # Restore the picker's remembered element selection (set by _cascade's
+        # set() to []), so reopening the '...' dialog reconstructs the case.
+        elements = self.node.parameters["basis elements"].value
+        if elements:
+            current = self["basis"].get_name()
+            self["basis"].set({"name": current, "elements": elements.split(",")})
 
     def _filter_changed(self, event=None):
-        """The periodic filter changed: re-discover, keeping selections if they
-        survive the new filter."""
+        """The periodic filter changed: re-discover, keeping selections (and the
+        basis) if they survive the new filter."""
         self._discover()
-        self._cascade(self["type"].get(), self["method"].get(), self["program"].get())
+        self._cascade(
+            self["type"].get(),
+            self["method"].get(),
+            self["program"].get(),
+            self["basis"].get(),
+        )
 
     def _type_changed(self, event=None):
-        """Type changed: reset Method and Program to the first available."""
+        """Type changed: reset Method, Program, and basis to the first available."""
         self._cascade(self["type"].get(), None, None)
 
     def _method_changed(self, event=None):
-        """Method changed: reset Program to the first available."""
+        """Method changed: reset Program and basis to the first available."""
         self._cascade(self["type"].get(), self["method"].get(), None)
+
+    def _program_changed(self, event=None):
+        """Program changed: refresh the advertised default basis for it."""
+        self._cascade(self["type"].get(), self["method"].get(), self["program"].get())
 
     def right_click(self, event):
         """

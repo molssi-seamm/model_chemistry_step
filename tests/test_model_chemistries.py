@@ -154,6 +154,31 @@ def test_wrapper_has_the_full_model_chemistry_contract(monkeypatch):
     assert w["options"] is opts  # carried through unchanged
 
 
+def test_match_ignoring_basis_accepts_a_user_chosen_basis():
+    """A basis beyond the advertised set is accepted when a program offers the
+    owner/type/method; the published wrapper carries the user's basis."""
+    node = ModelChemistry()
+    available = {
+        "ORCA:DFT@PBE0/def2-SVP": {
+            "owner": "ORCA",
+            "type": "DFT",
+            "method": "PBE0",
+            "basis": "def2-SVP",
+            "cutoff": None,
+            "level": "ORCA:DFT@PBE0/def2-SVP",
+            "step": "orca",
+            "options": {},
+        }
+    }
+    mc = node._match_ignoring_basis("ORCA:DFT@PBE0/bse:cc-pVQZ", available)
+    assert mc is not None
+    assert mc["basis"] == "bse:cc-pVQZ"
+    assert mc["level"] == "ORCA:DFT@PBE0/bse:cc-pVQZ"
+    assert (mc["owner"], mc["type"], mc["method"]) == ("ORCA", "DFT", "PBE0")
+    # An owner/type/method no program offers is still rejected.
+    assert node._match_ignoring_basis("ORCA:DFT@B3LYP/def2-SVP", available) is None
+
+
 def test_filter_flags_are_forwarded_to_providers(monkeypatch):
     """periodic_only / mdi_only are passed straight through to each provider's
     get_model_chemistry_options()."""

@@ -217,6 +217,30 @@ def test_compose_rejects_cutoff_without_basis():
         )
 
 
+@pytest.mark.parametrize(
+    "text,owner,basis",
+    [
+        ("ORCA:DFT@PBE0/bse:cc-pVTZ", "ORCA", "bse:cc-pVTZ"),  # owner + bse basis
+        ("DFT@PBE0/bse:cc-pVTZ", None, "bse:cc-pVTZ"),  # no owner + bse basis
+    ],
+)
+def test_parse_level_bse_basis(text, owner, basis):
+    """A 'bse:NAME' basis prefix is kept on the basis, not read as an owner."""
+    parsed = parse_level(text)
+    assert parsed["owner"] == owner
+    assert parsed["basis"] == basis
+    assert parsed["method"] == "PBE0"
+
+
+def test_compose_bse_basis_round_trip():
+    """A 'bse:' basis composes and re-parses (the ':' in the basis is allowed)."""
+    s = compose_model_chemistry(
+        driver="ORCA", task="SP", type="DFT", method="PBE0", basis="bse:cc-pVTZ"
+    )
+    assert s == "ORCA:SP|DFT@PBE0/bse:cc-pVTZ"
+    assert parse_level("DFT@PBE0/bse:cc-pVTZ")["basis"] == "bse:cc-pVTZ"
+
+
 def test_compose_rejects_reserved_in_token():
     with pytest.raises(ValueError):
         compose_model_chemistry(
