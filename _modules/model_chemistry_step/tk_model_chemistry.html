@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.tk_model_chemistry &#8212; SEAMM Model Chemistry Plug-in 2026.6.26 documentation</title>
+    <title>model_chemistry_step.tk_model_chemistry &#8212; SEAMM Model Chemistry Plug-in 2026.6.28 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../_static/documentation_options.js?v=47d802d6"></script>
+    <script src="../../_static/documentation_options.js?v=0bba250d"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +52,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.6.26" />
+  <meta name="docsearch:version" content="2026.6.28" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -640,11 +640,17 @@
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sw</span><span class="o">.</span><span class="n">LabeledCombobox</span><span class="p">(</span>
             <span class="n">frame</span><span class="p">,</span> <span class="n">labeltext</span><span class="o">=</span><span class="s2">&quot;Program:&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;readonly&quot;</span>
         <span class="p">)</span>
+        <span class="c1"># The basis set -- a shared widget (entry/list + &#39;...&#39; to the Basis Set</span>
+        <span class="c1"># Exchange). Shown only for levels of theory that use a basis (HF, DFT,</span>
+        <span class="c1"># MP2, coupled cluster); hidden for SQM/FF/MLFF.</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sw</span><span class="o">.</span><span class="n">BasisSetField</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">labeltext</span><span class="o">=</span><span class="s2">&quot;Basis set:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">elements_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_elements</span>
 
         <span class="c1"># Changing the filter re-discovers; changing a level cascades downward.</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;periodic&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_changed</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_changed</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;ComboboxSelected&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program_changed</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">()</span></div>
 
@@ -685,7 +691,16 @@
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
             <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">sw</span><span class="o">.</span><span class="n">align_labels</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_CASCADE</span><span class="p">],</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
+        <span class="n">shown</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_CASCADE</span><span class="p">)</span>
+        <span class="c1"># Show the basis only for a level of theory that uses one.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needs_basis</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">EW</span><span class="p">)</span>
+            <span class="n">shown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;basis&quot;</span><span class="p">)</span>
+            <span class="n">row</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">sw</span><span class="o">.</span><span class="n">align_labels</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">shown</span><span class="p">],</span> <span class="n">sticky</span><span class="o">=</span><span class="n">tk</span><span class="o">.</span><span class="n">E</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">row</span></div>
 
@@ -707,18 +722,20 @@
             <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="n">program</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">type_</span> <span class="ow">and</span> <span class="n">method</span> <span class="ow">and</span> <span class="n">program</span><span class="p">:</span>
-                <span class="c1"># Store the actual discovered canonical string (which carries</span>
-                <span class="c1"># any basis/cutoff) rather than recomposing from the three</span>
-                <span class="c1"># selectors, so the stored value always validates in run().</span>
-                <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">w</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_chemistries</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">program</span>
-                    <span class="ow">and</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">type_</span>
-                    <span class="ow">and</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">method</span>
-                <span class="p">]</span>
-                <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;model_chemistry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># Compose the level spec from the selectors plus the chosen basis.</span>
+                <span class="c1"># The owner/type/method must be one a program offers (run()</span>
+                <span class="c1"># validates this); the basis is the user&#39;s free choice.</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">program</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">type_</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">elements</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needs_basis</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">):</span>
+                    <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">basis</span><span class="p">:</span>
+                        <span class="n">level</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="c1"># Remember the picker&#39;s element selection so it can be</span>
+                        <span class="c1"># reconstructed on reopen (GUI-only; not used in run()).</span>
+                        <span class="n">elements</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="s2">&quot;elements&quot;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;model_chemistry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">level</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;basis elements&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">elements</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">handle_dialog</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
@@ -753,10 +770,39 @@
             <span class="p">}</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_needs_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether the offered level of theory uses a basis (data-driven: any</span>
+<span class="sd">        matching discovered option carries one).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_basis</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An example basis a program advertises for this owner/type/method, or</span>
+<span class="sd">        ``&quot;&quot;`` if it uses none.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_chemistries</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">w</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">type_</span>
+                <span class="ow">and</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">method</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">program</span> <span class="ow">or</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">program</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;basis&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="n">w</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_current_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Element symbols in the current configuration, to preselect in the</span>
+<span class="sd">        Basis Set Exchange dialog. Best-effort: empty if there is none yet.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">configuration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">get_system_configuration</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">configuration</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">symbols</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Repopulate the three comboboxes, keeping valid selections and</span>
 <span class="sd">        falling back to the first available choice when one is no longer</span>
-<span class="sd">        valid (so each level always has a consistent selection below it).&quot;&quot;&quot;</span>
+<span class="sd">        valid (so each level always has a consistent selection below it). The</span>
+<span class="sd">        basis field is seeded with the advertised default (or the passed value)</span>
+<span class="sd">        and the layout refreshed so it shows only when the level uses a basis.&quot;&quot;&quot;</span>
         <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_types</span><span class="p">()</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">types</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">type_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
@@ -775,10 +821,18 @@
             <span class="n">program</span> <span class="o">=</span> <span class="n">programs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">programs</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">program</span><span class="p">)</span>
 
+        <span class="c1"># Seed the basis: the caller&#39;s value (e.g. the stored one) wins, else the</span>
+        <span class="c1"># program&#39;s advertised default for this level.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_needs_basis</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">):</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">basis</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_basis</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_dialog</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_from_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Preset the selectors by decomposing the stored canonical string.&quot;&quot;&quot;</span>
         <span class="n">selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;model_chemistry&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">type_</span> <span class="o">=</span> <span class="n">method</span> <span class="o">=</span> <span class="n">program</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">type_</span> <span class="o">=</span> <span class="n">method</span> <span class="o">=</span> <span class="n">program</span> <span class="o">=</span> <span class="n">basis</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_expr</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">components</span> <span class="o">=</span> <span class="n">parse_level</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
@@ -788,23 +842,40 @@
                 <span class="n">type_</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
                 <span class="n">method</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
                 <span class="n">program</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span>
+                <span class="n">basis</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_discover</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+
+        <span class="c1"># Restore the picker&#39;s remembered element selection (set by _cascade&#39;s</span>
+        <span class="c1"># set() to []), so reopening the &#39;...&#39; dialog reconstructs the case.</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;basis elements&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">elements</span><span class="p">:</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">current</span><span class="p">,</span> <span class="s2">&quot;elements&quot;</span><span class="p">:</span> <span class="n">elements</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_filter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The periodic filter changed: re-discover, keeping selections if they</span>
-<span class="sd">        survive the new filter.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The periodic filter changed: re-discover, keeping selections (and the</span>
+<span class="sd">        basis) if they survive the new filter.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_discover</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_type_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Type changed: reset Method and Program to the first available.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Type changed: reset Method, Program, and basis to the first available.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_method_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method changed: reset Program to the first available.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method changed: reset Program and basis to the first available.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_program_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Program changed: refresh the advertised default basis for it.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cascade</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
 
 <div class="viewcode-block" id="TkModelChemistry.right_click">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.tk_model_chemistry.TkModelChemistry.right_click">[docs]</a>

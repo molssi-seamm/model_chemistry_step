@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>History &#8212; SEAMM Model Chemistry Plug-in 2026.6.26 documentation</title>
+    <title>History &#8212; SEAMM Model Chemistry Plug-in 2026.6.28 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="_static/documentation_options.js?v=47d802d6"></script>
+    <script src="_static/documentation_options.js?v=0bba250d"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -54,7 +54,7 @@
     <link rel="prev" title="Development Team" href="authors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.6.26" />
+  <meta name="docsearch:version" content="2026.6.28" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -509,6 +509,19 @@
                   
   <section id="history">
 <h1>History<a class="headerlink" href="#history" title="Link to this heading">#</a></h1>
+<dl class="simple">
+<dt>2026.6.28 – Basis-set selection</dt><dd><ul class="simple">
+<li><p>Added a basis-set field to the dialog for levels of theory that use a basis
+(HF, DFT, MP2, coupled cluster), using the shared Basis Set Exchange picker
+(choose elements on a periodic table, then a covering basis). It is hidden
+for methods that use no basis (semiempirical, forcefield, MLFF).</p></li>
+<li><p>The basis is the user’s free choice – any Basis Set Exchange basis (stored
+as ‘bse:NAME’), not just the few a program advertises. A level of theory is
+accepted as long as a program offers its type and method.</p></li>
+<li><p>The model-chemistry grammar accepts a ‘bse:’ prefix on the basis.</p></li>
+</ul>
+</dd>
+</dl>
 <section id="id1">
 <h2>2026.6.22 (2026-06-22)<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
 <ul class="simple">
