@@ -205,6 +205,31 @@ class ModelChemistry(seamm.Node):
                 }
         return result
 
+    def _match_ignoring_basis(self, selected, available):
+        """Match `selected` to an offered owner/type/method, ignoring the basis.
+
+        Programs advertise only a few example basis sets, but the basis is the
+        user's free choice. If a program offers the same owner/type/method as
+        `selected`, return a ``_model_chemistry`` wrapper built from that offering
+        with the user's basis/cutoff/level substituted; otherwise ``None``.
+        """
+        try:
+            sel = parse_level(selected)
+        except ValueError:
+            return None
+        for wrapper in available.values():
+            if (
+                wrapper["owner"] == sel["owner"]
+                and wrapper["type"] == sel["type"]
+                and wrapper["method"] == sel["method"]
+            ):
+                model_chemistry = dict(wrapper)
+                model_chemistry["basis"] = sel["basis"]
+                model_chemistry["cutoff"] = sel["cutoff"]
+                model_chemistry["level"] = selected
+                return model_chemistry
+        return None
+
     def run(self):
         """Run a Model Chemistry step.
 
@@ -233,22 +258,29 @@ class ModelChemistry(seamm.Node):
         # Discover what the installed program plug-ins offer, then validate the
         # selection against it before publishing it for downstream steps.
         available = self.model_chemistries(periodic_only=periodic, mdi_only=False)
-        if selected not in available:
-            if len(available) == 0:
+        if selected in available:
+            model_chemistry = available[selected]
+        else:
+            # The exact string is not advertised, but the basis is a free choice
+            # (a program advertises only a few example bases; the user may pick
+            # any, e.g. from the Basis Set Exchange). Accept the selection if a
+            # program offers the same owner/type/method, publishing the user's
+            # basis and cutoff.
+            model_chemistry = self._match_ignoring_basis(selected, available)
+            if model_chemistry is None:
+                if len(available) == 0:
+                    raise ValueError(
+                        f"The model chemistry '{selected}' is not available: no "
+                        "installed program plug-in offers a model chemistry"
+                        + (" for periodic systems." if periodic else ".")
+                    )
                 raise ValueError(
-                    f"The model chemistry '{selected}' is not available: no "
-                    "installed program plug-in offers a model chemistry"
-                    + (" for periodic systems." if periodic else ".")
+                    f"The model chemistry '{selected}' is not available"
+                    + (" for periodic systems" if periodic else "")
+                    + ". The available model chemistries are: "
+                    + ", ".join(sorted(available))
+                    + "."
                 )
-            raise ValueError(
-                f"The model chemistry '{selected}' is not available"
-                + (" for periodic systems" if periodic else "")
-                + ". The available model chemistries are: "
-                + ", ".join(sorted(available))
-                + "."
-            )
-
-        model_chemistry = available[selected]
 
         # Publish it as a workspace variable for downstream steps (e.g. LAMMPS),
         # mirroring how the Forcefield step provides "_forcefield".

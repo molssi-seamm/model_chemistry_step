@@ -68,7 +68,11 @@ def _compose_theory(type_, method, basis=None, cutoff=None):
         )
     text = f"{type_}@{method}"
     if basis is not None:
-        _check_token(basis, "basis")
+        # A basis may carry a 'bse:NAME' prefix forcing the Basis Set Exchange
+        # copy. The ':' there is part of the basis, not an owner separator, so
+        # validate the bare name but keep the prefix in the output.
+        bare = basis[4:] if basis.lower().startswith("bse:") else basis
+        _check_token(bare, "basis")
         text += f"/{basis}"
         if cutoff is not None:
             _check_token(cutoff, "cutoff")
@@ -100,9 +104,12 @@ def parse_level(text):
     ValueError
         If the ``@`` separating type from method is missing.
     """
-    # An owner is the only place a ':' can legally appear in a level spec
-    # (type/method/basis/cutoff are tokens), so a ':' splits owner from theory.
-    if ":" in text:
+    # An owner ':' precedes the 'type@method'; the only other ':' allowed in a
+    # level spec is the 'bse:' prefix on a basis, which comes after the '@'. So a
+    # ':' is an owner separator only when it occurs before the first '@'.
+    at = text.find("@")
+    colon = text.find(":")
+    if colon != -1 and (at == -1 or colon < at):
         owner, theory = text.split(":", 1)
         _check_token(owner, "owner")
     else:
