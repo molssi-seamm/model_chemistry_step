@@ -271,6 +271,61 @@ def test_ok_allows_a_basis_beyond_the_advertised_set(monkeypatch):
     assert fs.node.parameters["model_chemistry"].value == "Psi4:DFT@B3LYP/bse:cc-pVQZ"
 
 
+# --------------------------------------------------------------------------- #
+# $variable/=expression typed into Type/Method/Program -- must survive the
+# cascade (not be clobbered by "reset to the first available choice") and
+# still compose/decompose correctly.
+# --------------------------------------------------------------------------- #
+
+
+def test_cascade_preserves_an_expression_method():
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(fs, "DFT", "$functional", "Psi4")
+    assert fs["method"].get() == "$functional"
+    # Program/basis can't be discovered from an unresolved method, so the
+    # combobox offers no suggestions -- but the typed value itself is kept.
+    assert fs["program"].values == []
+
+
+def test_cascade_preserves_an_expression_type():
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(fs, "$level_type", "ignored", None)
+    assert fs["type"].get() == "$level_type"
+    assert fs["method"].values == []
+
+
+def test_cascade_shows_basis_field_when_type_is_an_expression():
+    """_needs_basis can't discover anything for an unresolved type, so the
+    basis field must default to shown rather than silently hidden."""
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(fs, "$level_type", "$functional", None, "def2-SVP")
+    assert fs["basis"].get_name() == "def2-SVP"
+
+
+def test_load_preserves_an_expression_embedded_in_the_method():
+    """Reopening the dialog on a stored '...@$functional/...' must not
+    replace the $functional text with the first discovered method."""
+    fs = _FakeTk(SAMPLE, model_chemistry="Psi4:DFT@$functional/def2-SVP")
+    calls = _record_cascade(fs)
+    TkModelChemistry._load_from_parameter(fs)
+    assert calls == [("DFT", "$functional", "Psi4", "def2-SVP")]
+
+
+def test_ok_composes_level_with_an_expression_method(monkeypatch):
+    monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
+    fs = _FakeTk(SAMPLE)
+    fs["type"].set("DFT")
+    fs["method"].set("$functional")
+    fs["program"].set("Psi4")
+    fs["basis"].set("def2-SVP")
+
+    TkModelChemistry.handle_dialog(fs, "OK")
+
+    assert (
+        fs.node.parameters["model_chemistry"].value == "Psi4:DFT@$functional/def2-SVP"
+    )
+
+
 def test_cancel_does_not_change_the_parameter(monkeypatch):
     monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
     fs = _FakeTk(SAMPLE, model_chemistry="MOPAC:SQM@PM6-ORG")

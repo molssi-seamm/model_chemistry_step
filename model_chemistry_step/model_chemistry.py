@@ -14,7 +14,7 @@ import seamm_util.printing as printing
 from seamm_util.printing import FormattedText as __
 import stevedore
 
-from .grammar import parse_level
+from .grammar import parse_level, _compose_theory
 
 # In addition to the normal logger, two logger-like printing facilities are
 # defined: "job" and "printer". "job" send output to the main job.out file for
@@ -33,6 +33,67 @@ path = importlib.resources.files("model_chemistry_step") / "data"
 csv_file = path / "properties.csv"
 if path.exists():
     molsystem.add_properties_from_file(csv_file)
+
+
+def _dereference(token, context):
+    """Evaluate `token` if it is a ``$variable``/``=expression`` (mirroring
+    ``seamm.Parameter.is_expr``/``.get()``), else return it unchanged."""
+    if token is None:
+        return token
+    if (
+        isinstance(token, str)
+        and len(token) > 0
+        and token[0] in ("$", "=")
+        and token != "=="
+    ):
+        return str(eval(token[1:], context))  # noqa: S307 -- flowchart expression
+    return token
+
+
+def resolve_level(selected, context):
+    """Dereference any ``$variable``/``=expression`` component of a level
+    spec string, returning the resolved string.
+
+    Needed because the ``model_chemistry`` parameter is one whole string
+    (``[owner:]type@method[/basis[@cutoff]]``) -- SEAMM's own
+    ``current_values_to_dict`` only substitutes a ``$var`` that is the
+    *entire* parameter value, not one embedded inside a larger string like
+    ``"DFT@$functional/def2-SVP"``. Each level-spec component (owner, type,
+    method, basis, cutoff) is dereferenced separately here instead, so a
+    preceding Loop step can vary any one of them -- most usefully type/method,
+    typed into the GUI's Type/Method comboboxes, which now accept a
+    ``$variable`` -- see ``TkModelChemistry``.
+
+    Parameters
+    ----------
+    selected : str
+        The (already whole-value-dereferenced) ``model_chemistry`` string.
+    context : dict
+        The flowchart-variables mapping to evaluate any expression against.
+
+    Returns
+    -------
+    str
+        `selected` unchanged if it does not parse as a level spec, or none
+        of its components is an expression; otherwise the same level spec
+        with every expression component evaluated and substituted.
+    """
+    try:
+        parsed = parse_level(selected)
+    except ValueError:
+        return selected
+    if not any(
+        seamm.Node.is_expr(parsed[key])
+        for key in ("owner", "type", "method", "basis", "cutoff")
+    ):
+        return selected
+    owner = _dereference(parsed["owner"], context)
+    type_ = _dereference(parsed["type"], context)
+    method = _dereference(parsed["method"], context)
+    basis = _dereference(parsed["basis"], context)
+    cutoff = _dereference(parsed["cutoff"], context)
+    level = _compose_theory(type_, method, basis, cutoff)
+    return f"{owner}:{level}" if owner else level
 
 
 class ModelChemistry(seamm.Node):
@@ -254,6 +315,20 @@ class ModelChemistry(seamm.Node):
 
         periodic = P["periodic"] == "yes"
         selected = P["model_chemistry"]
+
+        # Dereference any $variable/=expression embedded in one of the level
+        # spec's components (owner/type/method/basis/cutoff) -- see
+        # resolve_level's docstring for why this can't just be left to
+        # current_values_to_dict above.
+        resolved = resolve_level(selected, dict(seamm.flowchart_variables._data))
+        if resolved != selected:
+            printer.important(
+                __(
+                    f"Resolved the model chemistry to '{resolved}'.",
+                    indent=self.indent + 4 * " ",
+                )
+            )
+            selected = resolved
 
         # Discover what the installed program plug-ins offer, then validate the
         # selection against it before publishing it for downstream steps.

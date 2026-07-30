@@ -136,12 +136,14 @@ class TkModelChemistry(seamm.TkNode):
         self["periodic"].config(state="readonly")
 
         # The cascading selectors (GUI-only; not bound to a parameter).
-        self["type"] = sw.LabeledCombobox(frame, labeltext="Type:", state="readonly")
-        self["method"] = sw.LabeledCombobox(
-            frame, labeltext="Method:", state="readonly"
-        )
+        # 'normal' (not 'readonly') so a $variable/=expression can be typed
+        # in -- e.g. to vary the type/method/program from a preceding Loop,
+        # dereferenced at run time by ModelChemistry.run() -- while still
+        # offering the discovered choices via the dropdown.
+        self["type"] = sw.LabeledCombobox(frame, labeltext="Type:", state="normal")
+        self["method"] = sw.LabeledCombobox(frame, labeltext="Method:", state="normal")
         self["program"] = sw.LabeledCombobox(
-            frame, labeltext="Program:", state="readonly"
+            frame, labeltext="Program:", state="normal"
         )
         # The basis set -- a shared widget (entry/list + '...' to the Basis Set
         # Exchange). Shown only for levels of theory that use a basis (HF, DFT,
@@ -189,9 +191,13 @@ class TkModelChemistry(seamm.TkNode):
             row += 1
 
         shown = list(_CASCADE)
-        # Show the basis only for a level of theory that uses one.
-        if self._needs_basis(
-            self["type"].get(), self["method"].get(), self["program"].get()
+        # Show the basis only for a level of theory that uses one -- unknowable
+        # by discovery when type/method is a $variable, so default to showing it.
+        type_, method = self["type"].get(), self["method"].get()
+        if (
+            self.is_expr(type_)
+            or self.is_expr(method)
+            or self._needs_basis(type_, method, self["program"].get())
         ):
             self["basis"].grid(row=row, column=0, sticky=tk.EW)
             shown.append("basis")
@@ -218,10 +224,16 @@ class TkModelChemistry(seamm.TkNode):
             if type_ and method and program:
                 # Compose the level spec from the selectors plus the chosen basis.
                 # The owner/type/method must be one a program offers (run()
-                # validates this); the basis is the user's free choice.
+                # validates this); the basis is the user's free choice. Whether a
+                # basis applies cannot be discovered when type/method is a
+                # $variable, so include whatever basis is entered in that case too.
                 level = f"{program}:{type_}@{method}"
                 elements = ""
-                if self._needs_basis(type_, method, program):
+                if (
+                    self.is_expr(type_)
+                    or self.is_expr(method)
+                    or self._needs_basis(type_, method, program)
+                ):
                     basis = self["basis"].get_name().strip()
                     if basis:
                         level += f"/{basis}"
@@ -295,28 +307,46 @@ class TkModelChemistry(seamm.TkNode):
         falling back to the first available choice when one is no longer
         valid (so each level always has a consistent selection below it). The
         basis field is seeded with the advertised default (or the passed value)
-        and the layout refreshed so it shows only when the level uses a basis."""
+        and the layout refreshed so it shows only when the level uses a basis.
+
+        A ``$variable``/``=expression`` value (see `is_expr`) is left exactly
+        as typed at every step here -- it cannot be discovered/validated
+        against the installed program plug-ins (its value is not known until
+        run time), so it must not be silently replaced by "the first
+        available choice" the way an unrecognized plain string would be.
+        """
         types = self._types()
         self["type"].combobox.configure(values=types)
-        if type_ not in types:
+        if type_ not in types and not self.is_expr(type_):
             type_ = types[0] if types else ""
         self["type"].set(type_)
 
-        methods = self._methods(type_)
+        methods = [] if self.is_expr(type_) else self._methods(type_)
         self["method"].combobox.configure(values=methods)
-        if method not in methods:
+        if method not in methods and not self.is_expr(method):
             method = methods[0] if methods else ""
         self["method"].set(method)
 
-        programs = self._programs(type_, method)
+        programs = (
+            []
+            if self.is_expr(type_) or self.is_expr(method)
+            else self._programs(type_, method)
+        )
         self["program"].combobox.configure(values=programs)
-        if program not in programs:
+        if program not in programs and not self.is_expr(program):
             program = programs[0] if programs else ""
         self["program"].set(program)
 
         # Seed the basis: the caller's value (e.g. the stored one) wins, else the
-        # program's advertised default for this level.
-        if self._needs_basis(type_, method, program):
+        # program's advertised default for this level. Whether a level "needs" a
+        # basis cannot be discovered when type/method is a variable -- default to
+        # showing the field in that case (most levels of theory use one, and the
+        # basis field itself accepts a $variable/blank either way).
+        if (
+            self.is_expr(type_)
+            or self.is_expr(method)
+            or self._needs_basis(type_, method, program)
+        ):
             self["basis"].set(basis or self._default_basis(type_, method, program))
         else:
             self["basis"].set("")
