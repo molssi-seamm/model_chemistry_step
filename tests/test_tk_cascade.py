@@ -76,6 +76,19 @@ class _Node:
         }
 
 
+class _BoolVar:
+    """Stand-in for a tk.BooleanVar: just get/set."""
+
+    def __init__(self, value=False):
+        self._value = value
+
+    def get(self):
+        return self._value
+
+    def set(self, value):
+        self._value = value
+
+
 class _FakeTk(TkModelChemistry):
     """A TkModelChemistry whose Tk wiring is replaced by fakes.
 
@@ -87,12 +100,14 @@ class _FakeTk(TkModelChemistry):
 
     def __init__(self, model_chemistries, periodic="no", model_chemistry=None):
         self._model_chemistries = model_chemistries
+        self._direct_entry_var = _BoolVar(False)
         self._widgets = {
             "periodic": _Combo(periodic),
             "type": _Combo(),
             "method": _Combo(),
             "program": _Combo(),
             "basis": _BasisField(),  # stands in for the BasisSetField
+            "model_chemistry": _Combo(),  # stands in for the LabeledEntry
         }
         self.node = _Node(model_chemistry)
 
@@ -336,3 +351,140 @@ def test_cancel_does_not_change_the_parameter(monkeypatch):
     TkModelChemistry.handle_dialog(fs, "Cancel")
 
     assert fs.node.parameters["model_chemistry"].value == "MOPAC:SQM@PM6-ORG"
+
+
+# --------------------------------------------------------------------------- #
+# Direct-entry mode -- typing the whole model_chemistry string by hand
+# --------------------------------------------------------------------------- #
+
+
+def test_decompose_a_canonical_string():
+    fs = _FakeTk(SAMPLE)
+    assert TkModelChemistry._decompose(fs, "Psi4:DFT@B3LYP/def2-SVP") == (
+        "DFT",
+        "B3LYP",
+        "Psi4",
+        "def2-SVP",
+    )
+
+
+def test_decompose_an_expression_is_all_none():
+    fs = _FakeTk(SAMPLE)
+    assert TkModelChemistry._decompose(fs, "$MODEL_CHEMISTRY") == (
+        None,
+        None,
+        None,
+        None,
+    )
+
+
+def test_decompose_unparseable_is_all_none():
+    fs = _FakeTk(SAMPLE)
+    assert TkModelChemistry._decompose(fs, "garbage-no-delimiters") == (
+        None,
+        None,
+        None,
+        None,
+    )
+
+
+def test_load_starts_in_picker_mode_for_a_decomposable_string():
+    fs = _FakeTk(SAMPLE, model_chemistry="Psi4:DFT@B3LYP/def2-SVP")
+    fs._discover = lambda: None
+    fs._cascade = lambda *a: None
+    TkModelChemistry._load_from_parameter(fs)
+    assert fs._direct_entry_var.get() is False
+    assert fs["model_chemistry"].get() == "Psi4:DFT@B3LYP/def2-SVP"
+
+
+def test_load_starts_in_direct_entry_mode_for_a_whole_string_expression():
+    fs = _FakeTk(SAMPLE, model_chemistry="$MODEL_CHEMISTRY")
+    fs._discover = lambda: None
+    fs._cascade = lambda *a: None
+    TkModelChemistry._load_from_parameter(fs)
+    assert fs._direct_entry_var.get() is True
+    assert fs["model_chemistry"].get() == "$MODEL_CHEMISTRY"
+
+
+def test_load_starts_in_direct_entry_mode_for_an_unparseable_string():
+    fs = _FakeTk(SAMPLE, model_chemistry="garbage-no-delimiters")
+    fs._discover = lambda: None
+    fs._cascade = lambda *a: None
+    TkModelChemistry._load_from_parameter(fs)
+    assert fs._direct_entry_var.get() is True
+
+
+def test_load_default_empty_stays_in_picker_mode():
+    # A brand-new step with nothing stored yet -- no reason to force direct
+    # entry just because there's nothing to decompose.
+    fs = _FakeTk(SAMPLE, model_chemistry="")
+    fs._discover = lambda: None
+    fs._cascade = lambda *a: None
+    TkModelChemistry._load_from_parameter(fs)
+    assert fs._direct_entry_var.get() is False
+
+
+def test_toggle_to_direct_seeds_text_from_the_picker():
+    fs = _FakeTk(SAMPLE)
+    fs["type"].set("DFT")
+    fs["method"].set("B3LYP")
+    fs["program"].set("Psi4")
+    fs["basis"].set("def2-SVP")
+
+    fs._direct_entry_var.set(True)
+    TkModelChemistry._direct_entry_changed(fs)
+
+    assert fs["model_chemistry"].get() == "Psi4:DFT@B3LYP/def2-SVP"
+
+
+def test_toggle_to_direct_with_incomplete_picker_leaves_text_unchanged():
+    fs = _FakeTk(SAMPLE)
+    fs["model_chemistry"].set("previous text")
+    # type/method/program never set -> picker has nothing to compose.
+
+    fs._direct_entry_var.set(True)
+    TkModelChemistry._direct_entry_changed(fs)
+
+    assert fs["model_chemistry"].get() == "previous text"
+
+
+def test_toggle_to_picker_decomposes_the_typed_text():
+    fs = _FakeTk(SAMPLE)
+    fs["model_chemistry"].set("Psi4:DFT@B3LYP/def2-SVP")
+    calls = _record_cascade(fs)
+
+    fs._direct_entry_var.set(False)
+    TkModelChemistry._direct_entry_changed(fs)
+
+    assert calls == [("DFT", "B3LYP", "Psi4", "def2-SVP")]
+
+
+def test_ok_in_direct_entry_mode_stores_the_typed_text_verbatim(monkeypatch):
+    monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
+    fs = _FakeTk(SAMPLE)
+    fs._direct_entry_var.set(True)
+    fs["model_chemistry"].set("  ORCA:DFT@$functional/$basis_name  ")
+
+    TkModelChemistry.handle_dialog(fs, "OK")
+
+    assert (
+        fs.node.parameters["model_chemistry"].value
+        == "ORCA:DFT@$functional/$basis_name"
+    )
+    assert fs.node.parameters["basis elements"].value == ""
+
+
+def test_ok_in_direct_entry_mode_ignores_the_picker_selectors(monkeypatch):
+    """Even if the (now-hidden) picker still has a selection from before the
+    toggle, direct-entry mode must not fall back to composing from it."""
+    monkeypatch.setattr(seamm.TkNode, "handle_dialog", lambda self, result: None)
+    fs = _FakeTk(SAMPLE)
+    fs["type"].set("SQM")
+    fs["method"].set("PM6-ORG")
+    fs["program"].set("MOPAC")
+    fs._direct_entry_var.set(True)
+    fs["model_chemistry"].set("$MODEL_CHEMISTRY")
+
+    TkModelChemistry.handle_dialog(fs, "OK")
+
+    assert fs.node.parameters["model_chemistry"].value == "$MODEL_CHEMISTRY"

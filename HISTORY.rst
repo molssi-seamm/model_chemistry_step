@@ -2,7 +2,7 @@
 History
 =======
 
-2026.7.30 -- Bugfix: $variables in the Type/Method/Basis selectors
+2026.7.30 -- $variables in the Type/Method/Basis selectors
     * The Type and Method (e.g. DFT functional) selectors now accept typed text,
       including a '$variable' or '=expression', so a preceding Loop step can vary
       the model chemistry from one iteration to the next.
@@ -11,6 +11,12 @@ History
       *entire* model-chemistry value was dereferenced; one embedded in a composed
       string (e.g. the Basis field alone) was passed through to downstream steps
       as the literal, unresolved text.
+    * Added a checkbox to enter the whole model-chemistry string directly as
+      text, instead of using the Type/Method/Program/Basis picker -- by far the
+      simplest way to use a '$variable', since it sidesteps the picker's
+      discovery/validation entirely. The dialog switches to this mode
+      automatically when the stored value can't be decomposed by the picker
+      (e.g. it is itself a '$variable').
 
 2026.6.28 -- Basis-set selection
     * Added a basis-set field to the dialog for levels of theory that use a basis
