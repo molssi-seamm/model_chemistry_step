@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.model_chemistry &#8212; SEAMM Model Chemistry Plug-in 2026.6.28 documentation</title>
+    <title>model_chemistry_step.model_chemistry &#8212; SEAMM Model Chemistry Plug-in 2026.7.30 documentation</title>
   
   
   
@@ -26,8 +26,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -35,12 +35,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c224919a" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../../_static/documentation_options.js?v=0bba250d"></script>
+    <script src="../../_static/documentation_options.js?v=5e20fa5c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +52,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.6.28" />
+  <meta name="docsearch:version" content="2026.7.30" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -507,7 +507,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">seamm_util.printing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FormattedText</span> <span class="k">as</span> <span class="n">__</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">stevedore</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_level</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_level</span><span class="p">,</span> <span class="n">_compose_theory</span>
 
 <span class="c1"># In addition to the normal logger, two logger-like printing facilities are</span>
 <span class="c1"># defined: &quot;job&quot; and &quot;printer&quot;. &quot;job&quot; send output to the main job.out file for</span>
@@ -526,6 +526,70 @@
 <span class="n">csv_file</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;properties.csv&quot;</span>
 <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="n">molsystem</span><span class="o">.</span><span class="n">add_properties_from_file</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dereference</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluate `token` if it is a ``$variable``/``=expression`` (mirroring</span>
+<span class="sd">    ``seamm.Parameter.is_expr``/``.get()``), else return it unchanged.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">token</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">token</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">token</span> <span class="o">!=</span> <span class="s2">&quot;==&quot;</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">token</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">context</span><span class="p">))</span>  <span class="c1"># noqa: S307 -- flowchart expression</span>
+    <span class="k">return</span> <span class="n">token</span>
+
+
+<div class="viewcode-block" id="resolve_level">
+<a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry.resolve_level">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_level</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dereference any ``$variable``/``=expression`` component of a level</span>
+<span class="sd">    spec string, returning the resolved string.</span>
+
+<span class="sd">    Needed because the ``model_chemistry`` parameter is one whole string</span>
+<span class="sd">    (``[owner:]type@method[/basis[@cutoff]]``) -- SEAMM&#39;s own</span>
+<span class="sd">    ``current_values_to_dict`` only substitutes a ``$var`` that is the</span>
+<span class="sd">    *entire* parameter value, not one embedded inside a larger string like</span>
+<span class="sd">    ``&quot;DFT@$functional/def2-SVP&quot;``. Each level-spec component (owner, type,</span>
+<span class="sd">    method, basis, cutoff) is dereferenced separately here instead, so a</span>
+<span class="sd">    preceding Loop step can vary any one of them -- most usefully type/method,</span>
+<span class="sd">    typed into the GUI&#39;s Type/Method comboboxes, which now accept a</span>
+<span class="sd">    ``$variable`` -- see ``TkModelChemistry``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    selected : str</span>
+<span class="sd">        The (already whole-value-dereferenced) ``model_chemistry`` string.</span>
+<span class="sd">    context : dict</span>
+<span class="sd">        The flowchart-variables mapping to evaluate any expression against.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        `selected` unchanged if it does not parse as a level spec, or none</span>
+<span class="sd">        of its components is an expression; otherwise the same level spec</span>
+<span class="sd">        with every expression component evaluated and substituted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">parse_level</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">selected</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">seamm</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">is_expr</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;basis&quot;</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">selected</span>
+    <span class="n">owner</span> <span class="o">=</span> <span class="n">_dereference</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">type_</span> <span class="o">=</span> <span class="n">_dereference</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">_dereference</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">basis</span> <span class="o">=</span> <span class="n">_dereference</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">_dereference</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="n">_compose_theory</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">owner</span> <span class="k">else</span> <span class="n">level</span></div>
+
 
 
 <div class="viewcode-block" id="ModelChemistry">
@@ -758,6 +822,20 @@
         <span class="n">periodic</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;periodic&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span>
         <span class="n">selected</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="s2">&quot;model_chemistry&quot;</span><span class="p">]</span>
 
+        <span class="c1"># Dereference any $variable/=expression embedded in one of the level</span>
+        <span class="c1"># spec&#39;s components (owner/type/method/basis/cutoff) -- see</span>
+        <span class="c1"># resolve_level&#39;s docstring for why this can&#39;t just be left to</span>
+        <span class="c1"># current_values_to_dict above.</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="n">resolve_level</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">flowchart_variables</span><span class="o">.</span><span class="n">_data</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">resolved</span> <span class="o">!=</span> <span class="n">selected</span><span class="p">:</span>
+            <span class="n">printer</span><span class="o">.</span><span class="n">important</span><span class="p">(</span>
+                <span class="n">__</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Resolved the model chemistry to &#39;</span><span class="si">{</span><span class="n">resolved</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">,</span>
+                    <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="n">resolved</span>
+
         <span class="c1"># Discover what the installed program plug-ins offer, then validate the</span>
         <span class="c1"># selection against it before publishing it for downstream steps.</span>
         <span class="n">available</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_chemistries</span><span class="p">(</span><span class="n">periodic_only</span><span class="o">=</span><span class="n">periodic</span><span class="p">,</span> <span class="n">mdi_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -846,8 +924,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -859,7 +937,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
 </p></div>
       
     </div>
