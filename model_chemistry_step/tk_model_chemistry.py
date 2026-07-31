@@ -303,10 +303,15 @@ class TkModelChemistry(seamm.TkNode):
                 self["model_chemistry"].set(level)
         else:
             # Text -> picker: decompose it the same way reopening the dialog
-            # does; falls back to the first available choice if it doesn't
-            # parse (e.g. it's a whole-string $variable).
+            # does. A component that isn't a currently discovered choice (a
+            # typo, an edit to a method not offered, or the whole string
+            # being a $variable/unparseable) is left blank rather than
+            # silently swapped for some other valid-looking choice.
             self._discover()
-            self._cascade(*self._decompose(self["model_chemistry"].get()))
+            self._cascade(
+                *self._decompose(self["model_chemistry"].get()),
+                blank_if_unmatched=True,
+            )
 
         self.reset_dialog()
 
@@ -398,7 +403,15 @@ class TkModelChemistry(seamm.TkNode):
         except Exception:
             return []
 
-    def _cascade(self, type_=None, method=None, program=None, basis=None):
+    def _cascade(
+        self,
+        type_=None,
+        method=None,
+        program=None,
+        basis=None,
+        *,
+        blank_if_unmatched=False,
+    ):
         """Repopulate the three comboboxes, keeping valid selections and
         falling back to the first available choice when one is no longer
         valid (so each level always has a consistent selection below it). The
@@ -410,17 +423,33 @@ class TkModelChemistry(seamm.TkNode):
         against the installed program plug-ins (its value is not known until
         run time), so it must not be silently replaced by "the first
         available choice" the way an unrecognized plain string would be.
+
+        ``blank_if_unmatched`` swaps that "first available choice" fallback
+        for a blank one. Callers reflecting a definite selection the widgets
+        already held (the interactive Type/Method/Program/filter callbacks)
+        want the friendly fallback -- there is no prior text to be unfaithful
+        to. Callers reflecting a *typed* string (direct-entry text, or the
+        stored parameter on dialog open) must not do that: silently swapping
+        an unrecognized value for some other, unrelated valid one looks like
+        the edit was ignored. Blank makes the mismatch visible instead.
         """
+        # None is used by callers (e.g. _type_changed) to mean "no preference,
+        # reset to first available" -- but is_expr() assumes a str, so
+        # normalize before any is_expr() check below.
+        type_ = type_ or ""
+        method = method or ""
+        program = program or ""
+
         types = self._types()
         self["type"].combobox.configure(values=types)
         if type_ not in types and not self.is_expr(type_):
-            type_ = types[0] if types else ""
+            type_ = "" if blank_if_unmatched else (types[0] if types else "")
         self["type"].set(type_)
 
         methods = [] if self.is_expr(type_) else self._methods(type_)
         self["method"].combobox.configure(values=methods)
         if method not in methods and not self.is_expr(method):
-            method = methods[0] if methods else ""
+            method = "" if blank_if_unmatched else (methods[0] if methods else "")
         self["method"].set(method)
 
         programs = (
@@ -430,7 +459,7 @@ class TkModelChemistry(seamm.TkNode):
         )
         self["program"].combobox.configure(values=programs)
         if program not in programs and not self.is_expr(program):
-            program = programs[0] if programs else ""
+            program = "" if blank_if_unmatched else (programs[0] if programs else "")
         self["program"].set(program)
 
         # Seed the basis: the caller's value (e.g. the stored one) wins, else the
@@ -485,7 +514,7 @@ class TkModelChemistry(seamm.TkNode):
         )
 
         self._discover()
-        self._cascade(type_, method, program, basis)
+        self._cascade(type_, method, program, basis, blank_if_unmatched=True)
 
         # Restore the picker's remembered element selection (set by _cascade's
         # set() to []), so reopening the '...' dialog reconstructs the case.
