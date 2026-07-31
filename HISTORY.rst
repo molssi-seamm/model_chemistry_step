@@ -2,6 +2,16 @@
 History
 =======
 
+2026.7.31 -- Bugfix: crash and stale picker on Type change / direct-entry edits
+    * Fixed a crash ("TypeError: object of type 'NoneType' has no len()") when
+      changing the Type selector (e.g. to DFT) in the Model Chemistry dialog.
+    * Editing the model-chemistry string in direct-entry mode and then
+      switching back to the guided picker now correctly reflects the edit. A
+      component that isn't a currently offered choice (e.g. a method not
+      advertised by any installed program) is now shown blank, instead of the
+      picker silently substituting some other, unrelated valid choice -- which
+      made an edit look like it had been ignored.
+
 2026.7.30 -- $variables in the Type/Method/Basis selectors
     * The Type and Method (e.g. DFT functional) selectors now accept typed text,
       including a '$variable' or '=expression', so a preceding Loop step can vary

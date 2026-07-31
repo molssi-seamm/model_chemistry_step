@@ -186,6 +186,40 @@ def test_cascade_falls_back_when_a_level_is_invalid():
     assert fs["program"].get() == "MOPAC"
 
 
+def test_cascade_blanks_an_unmatched_method_when_asked():
+    """blank_if_unmatched=True must not substitute a different valid choice
+    for a method that doesn't match -- that would look like a typed edit was
+    silently discarded/ignored rather than simply not (yet) recognized."""
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(
+        fs, "SQM", "does-not-exist", "MOPAC", blank_if_unmatched=True
+    )
+    assert fs["method"].get() == ""
+    assert fs["program"].get() == ""
+
+
+def test_cascade_blanks_an_unmatched_type_when_asked():
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(
+        fs, "does-not-exist", "AM1", "MOPAC", blank_if_unmatched=True
+    )
+    assert fs["type"].get() == ""
+    assert fs["method"].get() == ""
+    assert fs["program"].get() == ""
+
+
+def test_cascade_blank_if_unmatched_keeps_a_valid_selection():
+    """blank_if_unmatched only changes the *fallback*; a value that does
+    match a discovered choice is kept exactly as with the default fallback."""
+    fs = _FakeTk(SAMPLE)
+    TkModelChemistry._cascade(fs, "SQM", "PM6-ORG", "MOPAC", blank_if_unmatched=True)
+    assert (fs["type"].get(), fs["method"].get(), fs["program"].get()) == (
+        "SQM",
+        "PM6-ORG",
+        "MOPAC",
+    )
+
+
 def test_cascade_program_autoselects_when_unique():
     fs = _FakeTk(SAMPLE)
     TkModelChemistry._cascade(fs, "SQM", "PM6-ORG", None)
@@ -216,7 +250,7 @@ def test_cascade_handles_empty_discovery():
 def _record_cascade(fs):
     calls = []
     fs._discover = lambda: None
-    fs._cascade = lambda t, m, p, b=None: calls.append((t, m, p, b))
+    fs._cascade = lambda t, m, p, b=None, **kw: calls.append((t, m, p, b))
     return calls
 
 
@@ -391,7 +425,7 @@ def test_decompose_unparseable_is_all_none():
 def test_load_starts_in_picker_mode_for_a_decomposable_string():
     fs = _FakeTk(SAMPLE, model_chemistry="Psi4:DFT@B3LYP/def2-SVP")
     fs._discover = lambda: None
-    fs._cascade = lambda *a: None
+    fs._cascade = lambda *a, **kw: None
     TkModelChemistry._load_from_parameter(fs)
     assert fs._direct_entry_var.get() is False
     assert fs["model_chemistry"].get() == "Psi4:DFT@B3LYP/def2-SVP"
@@ -400,7 +434,7 @@ def test_load_starts_in_picker_mode_for_a_decomposable_string():
 def test_load_starts_in_direct_entry_mode_for_a_whole_string_expression():
     fs = _FakeTk(SAMPLE, model_chemistry="$MODEL_CHEMISTRY")
     fs._discover = lambda: None
-    fs._cascade = lambda *a: None
+    fs._cascade = lambda *a, **kw: None
     TkModelChemistry._load_from_parameter(fs)
     assert fs._direct_entry_var.get() is True
     assert fs["model_chemistry"].get() == "$MODEL_CHEMISTRY"
@@ -409,7 +443,7 @@ def test_load_starts_in_direct_entry_mode_for_a_whole_string_expression():
 def test_load_starts_in_direct_entry_mode_for_an_unparseable_string():
     fs = _FakeTk(SAMPLE, model_chemistry="garbage-no-delimiters")
     fs._discover = lambda: None
-    fs._cascade = lambda *a: None
+    fs._cascade = lambda *a, **kw: None
     TkModelChemistry._load_from_parameter(fs)
     assert fs._direct_entry_var.get() is True
 
@@ -419,7 +453,7 @@ def test_load_default_empty_stays_in_picker_mode():
     # entry just because there's nothing to decompose.
     fs = _FakeTk(SAMPLE, model_chemistry="")
     fs._discover = lambda: None
-    fs._cascade = lambda *a: None
+    fs._cascade = lambda *a, **kw: None
     TkModelChemistry._load_from_parameter(fs)
     assert fs._direct_entry_var.get() is False
 
@@ -457,6 +491,23 @@ def test_toggle_to_picker_decomposes_the_typed_text():
     TkModelChemistry._direct_entry_changed(fs)
 
     assert calls == [("DFT", "B3LYP", "Psi4", "def2-SVP")]
+
+
+def test_toggle_to_picker_blanks_an_edited_but_unrecognized_method():
+    """Editing the typed level's method to one not currently offered, then
+    switching back to the picker, must show that mismatch as a blank Method
+    (and Program) -- not silently land on some other, unrelated valid
+    choice, which would look like the edit had simply been discarded."""
+    fs = _FakeTk(SAMPLE)
+    fs["model_chemistry"].set("MOPAC:SQM@PM7")  # PM7 isn't in SAMPLE's methods
+    fs._discover = lambda: None
+
+    fs._direct_entry_var.set(False)
+    TkModelChemistry._direct_entry_changed(fs)
+
+    assert fs["type"].get() == "SQM"
+    assert fs["method"].get() == ""
+    assert fs["program"].get() == ""
 
 
 def test_ok_in_direct_entry_mode_stores_the_typed_text_verbatim(monkeypatch):
