@@ -127,6 +127,33 @@ class ModelChemistryParameters(seamm.Parameters):
         # },
     }
 
+    # Rules shared by the dialog and the flowchart builder (see seamm.Parameters)
+
+    def problems(self, values=None):
+        """The model chemistry must be one the installed programs offer (the basis
+        is a free choice), as the step checks when it runs."""
+        from .model_chemistry import availability_problem, discover_model_chemistries
+
+        if values is None:
+            values = self.current_values()
+        result = super().problems(values)
+        selected = values.get("model_chemistry")
+        if not isinstance(selected, str) or selected.strip() == "":
+            return result
+        if self._is_expr(selected):
+            return result  # resolved when the flowchart runs
+        periodic = str(values.get("periodic", "no")).lower() == "yes"
+        key = (periodic,)
+        cache = ModelChemistryParameters._available
+        if key not in cache:
+            cache[key] = discover_model_chemistries(periodic_only=periodic)
+        problem = availability_problem(selected, cache[key], periodic=periodic)
+        if problem:
+            result.append(problem)
+        return result
+
+    _available = {}  # discovered model chemistries, by (periodic,)
+
     def __init__(self, defaults={}, data=None):
         """
         Initialize the parameters, by default with the parameters defined above
