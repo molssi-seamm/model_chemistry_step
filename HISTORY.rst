@@ -2,6 +2,15 @@
 History
 =======
 
+2026.10.1 -- A model chemistry no installed program offers is refused when built
+    * The check that a model chemistry is offered by an installed program (ignoring the
+      basis set, which is a free choice) is now shared with SEAMM's flowchart tools, so
+      an unavailable model chemistry is refused when a flowchart is built or edited,
+      not only when it runs.
+    * Documented in the user guide. Needs seamm 2026.10.1.
+    * Internal: CI now installs the package's declared dependencies with uv rather than
+      a conda test environment.
+
 2026.7.31 -- Bugfix: crash and stale picker on Type change / direct-entry edits
     * Fixed a crash ("TypeError: object of type 'NoneType' has no len()") when
       changing the Type selector (e.g. to DFT) in the Model Chemistry dialog.

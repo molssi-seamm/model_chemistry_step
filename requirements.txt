@@ -1,3 +1,3 @@
-seamm
+seamm>=2026.10.1
 seamm-util
 seamm-widgets

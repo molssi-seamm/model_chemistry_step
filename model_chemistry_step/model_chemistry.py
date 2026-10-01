@@ -96,6 +96,130 @@ def resolve_level(selected, context):
     return f"{owner}:{level}" if owner else level
 
 
+def discover_model_chemistries(periodic_only=False, mdi_only=False):
+    """Discover the model chemistries offered by the installed program steps.
+
+    Each program plug-in (e.g. ``mopac_step``) may expose a
+    ``get_model_chemistry_options()`` classmethod on its helper class. This
+    method iterates the ``org.molssi.seamm`` Stevedore namespace, calls that
+    method on every helper that defines it, and returns the union keyed by
+    the canonical model-chemistry string.
+
+    Parameters
+    ----------
+    periodic_only : bool
+        Only return model chemistries validated for periodic systems.
+    mdi_only : bool
+        Only return model chemistries launchable via MDI.
+
+    Returns
+    -------
+    dict
+        Keyed by the advertised **level spec** ``[owner:]type@method``
+        string. Each value is a ``_model_chemistry`` wrapper::
+
+            {
+                "level": key,                        # the level spec
+                "owner": ..., "type": ..., "method": ...,  # parse_level(key)
+                "basis": ..., "cutoff": ...,
+                "step": "<stevedore plugin name>",   # resolution handle
+                "options": { ... full get_model_chemistry_options() entry },
+            }
+
+        A program step advertises *level specs* only (it knows its levels
+        of theory, not the task); the consuming step supplies the driver
+        and task. See ``model_chemistry_naming.rst``.
+    """
+    result = {}
+    mgr = stevedore.ExtensionManager(
+        namespace="org.molssi.seamm",
+        invoke_on_load=False,
+        on_load_failure_callback=lambda m, ep, err: logger.warning(
+            "Could not load step plug-in %r: %s", ep.name, err
+        ),
+    )
+    for ext in mgr:
+        getter = getattr(ext.plugin, "get_model_chemistry_options", None)
+        if getter is None:
+            continue
+        try:
+            options = getter(periodic_only=periodic_only, mdi_only=mdi_only)
+        except Exception as e:
+            logger.warning("%s.get_model_chemistry_options() failed: %s", ext.name, e)
+            continue
+        for option in options.values():
+            key = option["model_chemistry"]
+            if key in result:
+                logger.warning(
+                    "Model chemistry %s offered by more than one step; "
+                    "keeping the one from '%s'.",
+                    key,
+                    result[key]["step"],
+                )
+                continue
+            parsed = parse_level(key)
+            result[key] = {
+                "level": parsed["level"],
+                "owner": parsed["owner"],
+                "type": parsed["type"],
+                "method": parsed["method"],
+                "basis": parsed["basis"],
+                "cutoff": parsed["cutoff"],
+                "step": ext.name,
+                "options": option,
+            }
+    return result
+
+
+def match_model_chemistry(selected, available):
+    """Match `selected` to an offered owner/type/method, ignoring the basis.
+
+    Programs advertise only a few example basis sets, but the basis is the
+    user's free choice. If a program offers the same owner/type/method as
+    `selected`, return a ``_model_chemistry`` wrapper built from that offering
+    with the user's basis/cutoff/level substituted; otherwise ``None``.
+    """
+    try:
+        sel = parse_level(selected)
+    except ValueError:
+        return None
+    for wrapper in available.values():
+        if (
+            wrapper["owner"] == sel["owner"]
+            and wrapper["type"] == sel["type"]
+            and wrapper["method"] == sel["method"]
+        ):
+            model_chemistry = dict(wrapper)
+            model_chemistry["basis"] = sel["basis"]
+            model_chemistry["cutoff"] = sel["cutoff"]
+            model_chemistry["level"] = selected
+            return model_chemistry
+    return None
+
+
+def availability_problem(selected, available, periodic=False):
+    """Why a model chemistry is not available, or '' if it is.
+
+    Shared by the step's run-time check and its parameters' rules, which the
+    flowchart builder uses.
+    """
+    if selected in available or match_model_chemistry(selected, available):
+        return ""
+    if len(available) == 0:
+        return (
+            f"The model chemistry '{selected}' is not available: no installed "
+            "program plug-in offers a model chemistry"
+            + (" for periodic systems." if periodic else ".")
+        )
+    return (
+        f"The model chemistry '{selected}' is not available"
+        + (" for periodic systems" if periodic else "")
+        + ". The available model chemistries are: "
+        + ", ".join(sorted(available))
+        + "."
+    )
+
+
 class ModelChemistry(seamm.Node):
     """
     The non-graphical part of a Model Chemistry step in a flowchart.
@@ -191,105 +315,17 @@ class ModelChemistry(seamm.Node):
         return self.header + "\n" + __(text, **P, indent=4 * " ").__str__()
 
     def model_chemistries(self, periodic_only=False, mdi_only=False):
-        """Discover the model chemistries offered by the installed program steps.
+        """The model chemistries the installed program steps offer.
 
-        Each program plug-in (e.g. ``mopac_step``) may expose a
-        ``get_model_chemistry_options()`` classmethod on its helper class. This
-        method iterates the ``org.molssi.seamm`` Stevedore namespace, calls that
-        method on every helper that defines it, and returns the union keyed by
-        the canonical model-chemistry string.
-
-        Parameters
-        ----------
-        periodic_only : bool
-            Only return model chemistries validated for periodic systems.
-        mdi_only : bool
-            Only return model chemistries launchable via MDI.
-
-        Returns
-        -------
-        dict
-            Keyed by the advertised **level spec** ``[owner:]type@method``
-            string. Each value is a ``_model_chemistry`` wrapper::
-
-                {
-                    "level": key,                        # the level spec
-                    "owner": ..., "type": ..., "method": ...,  # parse_level(key)
-                    "basis": ..., "cutoff": ...,
-                    "step": "<stevedore plugin name>",   # resolution handle
-                    "options": { ... full get_model_chemistry_options() entry },
-                }
-
-            A program step advertises *level specs* only (it knows its levels
-            of theory, not the task); the consuming step supplies the driver
-            and task. See ``model_chemistry_naming.rst``.
+        See discover_model_chemistries(), which this calls.
         """
-        result = {}
-        mgr = stevedore.ExtensionManager(
-            namespace="org.molssi.seamm",
-            invoke_on_load=False,
-            on_load_failure_callback=lambda m, ep, err: logger.warning(
-                "Could not load step plug-in %r: %s", ep.name, err
-            ),
+        return discover_model_chemistries(
+            periodic_only=periodic_only, mdi_only=mdi_only
         )
-        for ext in mgr:
-            getter = getattr(ext.plugin, "get_model_chemistry_options", None)
-            if getter is None:
-                continue
-            try:
-                options = getter(periodic_only=periodic_only, mdi_only=mdi_only)
-            except Exception as e:
-                logger.warning(
-                    "%s.get_model_chemistry_options() failed: %s", ext.name, e
-                )
-                continue
-            for option in options.values():
-                key = option["model_chemistry"]
-                if key in result:
-                    logger.warning(
-                        "Model chemistry %s offered by more than one step; "
-                        "keeping the one from '%s'.",
-                        key,
-                        result[key]["step"],
-                    )
-                    continue
-                parsed = parse_level(key)
-                result[key] = {
-                    "level": parsed["level"],
-                    "owner": parsed["owner"],
-                    "type": parsed["type"],
-                    "method": parsed["method"],
-                    "basis": parsed["basis"],
-                    "cutoff": parsed["cutoff"],
-                    "step": ext.name,
-                    "options": option,
-                }
-        return result
 
     def _match_ignoring_basis(self, selected, available):
-        """Match `selected` to an offered owner/type/method, ignoring the basis.
-
-        Programs advertise only a few example basis sets, but the basis is the
-        user's free choice. If a program offers the same owner/type/method as
-        `selected`, return a ``_model_chemistry`` wrapper built from that offering
-        with the user's basis/cutoff/level substituted; otherwise ``None``.
-        """
-        try:
-            sel = parse_level(selected)
-        except ValueError:
-            return None
-        for wrapper in available.values():
-            if (
-                wrapper["owner"] == sel["owner"]
-                and wrapper["type"] == sel["type"]
-                and wrapper["method"] == sel["method"]
-            ):
-                model_chemistry = dict(wrapper)
-                model_chemistry["basis"] = sel["basis"]
-                model_chemistry["cutoff"] = sel["cutoff"]
-                model_chemistry["level"] = selected
-                return model_chemistry
-        return None
+        """See match_model_chemistry()."""
+        return match_model_chemistry(selected, available)
 
     def run(self):
         """Run a Model Chemistry step.
@@ -343,18 +379,8 @@ class ModelChemistry(seamm.Node):
             # basis and cutoff.
             model_chemistry = self._match_ignoring_basis(selected, available)
             if model_chemistry is None:
-                if len(available) == 0:
-                    raise ValueError(
-                        f"The model chemistry '{selected}' is not available: no "
-                        "installed program plug-in offers a model chemistry"
-                        + (" for periodic systems." if periodic else ".")
-                    )
                 raise ValueError(
-                    f"The model chemistry '{selected}' is not available"
-                    + (" for periodic systems" if periodic else "")
-                    + ". The available model chemistries are: "
-                    + ", ".join(sorted(available))
-                    + "."
+                    availability_problem(selected, available, periodic=periodic)
                 )
 
         # Publish it as a workspace variable for downstream steps (e.g. LAMMPS),
