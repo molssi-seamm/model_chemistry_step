@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.grammar &#8212; SEAMM Model Chemistry Plug-in 2026.7.31 documentation</title>
+    <title>model_chemistry_step.grammar &#8212; SEAMM Model Chemistry Plug-in 2026.10.1 documentation</title>
   
   
   
@@ -26,8 +25,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -35,12 +34,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c224919a" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=fa587e45"></script>
+    <script src="../../_static/documentation_options.js?v=65cfade2"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +51,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.7.31" />
+  <meta name="docsearch:version" content="2026.10.1" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -100,7 +99,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -225,7 +224,7 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -236,15 +235,15 @@
         <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -281,7 +280,7 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -393,15 +392,15 @@
           <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -493,7 +492,7 @@
   <h1>Source code for model_chemistry_step.grammar</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;The model-chemistry grammar for SEAMM.</span>
+<span class="sd">"""The model-chemistry grammar for SEAMM.</span>
 
 <span class="sd">A *model chemistry* names **what was done** (the task), **at what level of</span>
 <span class="sd">theory** (the potential energy surface), and **by which code(s)** (provenance),</span>
@@ -505,7 +504,7 @@
 <span class="sd">* ``task``    -- SP | OPT | MD | FREQ | ... (explicit and required).</span>
 <span class="sd">* ``owner``   -- the code evaluating the PES, written **only** when it differs</span>
 <span class="sd">  from the driver (i.e. under MDI delegation).</span>
-<span class="sd">* ``type@method[/basis[@cutoff]]`` -- the level of theory (&quot;level spec&quot;).</span>
+<span class="sd">* ``type@method[/basis[@cutoff]]`` -- the level of theory ("level spec").</span>
 <span class="sd">* ``//``      -- optionally joins an energy unit to the geometry unit it was</span>
 <span class="sd">  evaluated at (the Pople convention); lowest precedence.</span>
 
@@ -525,58 +524,58 @@
 <span class="sd">token. A ``cutoff`` requires a ``basis``. See</span>
 <span class="sd">``molssi-seamm.github.io`` :: ``background/model_chemistry_naming.rst`` for the</span>
 <span class="sd">full standard.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;parse_level&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;parse_model_chemistry&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;compose_model_chemistry&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;comparability_key&quot;</span><span class="p">,</span>
+    <span class="s2">"parse_level"</span><span class="p">,</span>
+    <span class="s2">"parse_model_chemistry"</span><span class="p">,</span>
+    <span class="s2">"compose_model_chemistry"</span><span class="p">,</span>
+    <span class="s2">"comparability_key"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1"># Characters reserved as grammar delimiters; no token may contain them.</span>
-<span class="n">RESERVED</span> <span class="o">=</span> <span class="s2">&quot;:@/|&quot;</span>
+<span class="n">RESERVED</span> <span class="o">=</span> <span class="s2">":@/|"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_token</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise ValueError if `token` is empty or contains a reserved character.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> is empty.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Raise ValueError if `token` is empty or contains a reserved character."""</span>
+    <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> is empty."</span><span class="p">)</span>
     <span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">RESERVED</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">token</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">&#39; contains reserved character(s) </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;the reserved characters are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">RESERVED</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> '</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">' contains reserved character(s) </span><span class="si">{</span><span class="n">bad</span><span class="si">}</span><span class="s2">; "</span>
+            <span class="sa">f</span><span class="s2">"the reserved characters are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">RESERVED</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compose_theory</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build ``type@method[/basis[@cutoff]]`` from its parts (with validation).&quot;&quot;&quot;</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Build ``type@method[/basis[@cutoff]]`` from its parts (with validation)."""</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">)</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">"method"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;A cutoff was given without a basis; the grammar requires &quot;</span>
-            <span class="s2">&quot;&#39;basis&#39; before &#39;@cutoff&#39;.&quot;</span>
+            <span class="s2">"A cutoff was given without a basis; the grammar requires "</span>
+            <span class="s2">"'basis' before '@cutoff'."</span>
         <span class="p">)</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">type_</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">type_</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># A basis may carry a &#39;bse:NAME&#39; prefix forcing the Basis Set Exchange</span>
-        <span class="c1"># copy. The &#39;:&#39; there is part of the basis, not an owner separator, so</span>
+        <span class="c1"># A basis may carry a 'bse:NAME' prefix forcing the Basis Set Exchange</span>
+        <span class="c1"># copy. The ':' there is part of the basis, not an owner separator, so</span>
         <span class="c1"># validate the bare name but keep the prefix in the output.</span>
-        <span class="n">bare</span> <span class="o">=</span> <span class="n">basis</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="k">if</span> <span class="n">basis</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;bse:&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">basis</span>
-        <span class="n">_check_token</span><span class="p">(</span><span class="n">bare</span><span class="p">,</span> <span class="s2">&quot;basis&quot;</span><span class="p">)</span>
-        <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">bare</span> <span class="o">=</span> <span class="n">basis</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="k">if</span> <span class="n">basis</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"bse:"</span><span class="p">)</span> <span class="k">else</span> <span class="n">basis</span>
+        <span class="n">_check_token</span><span class="p">(</span><span class="n">bare</span><span class="p">,</span> <span class="s2">"basis"</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"/</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_check_token</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="s2">&quot;cutoff&quot;</span><span class="p">)</span>
-            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;@</span><span class="si">{</span><span class="n">cutoff</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">_check_token</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="s2">"cutoff"</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"@</span><span class="si">{</span><span class="n">cutoff</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">return</span> <span class="n">text</span>
 
 
 <div class="viewcode-block" id="parse_level">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.grammar.parse_level">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_level</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a bare level spec ``[owner:]type@method[/basis[@cutoff]]``.</span>
+<span class="w">    </span><span class="sd">"""Parse a bare level spec ``[owner:]type@method[/basis[@cutoff]]``.</span>
 
 <span class="sd">    This is what a program step advertises (via</span>
 <span class="sd">    ``get_model_chemistry_options``) and what the Model Chemistry step selects;</span>
@@ -585,7 +584,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    text : str</span>
-<span class="sd">        A level spec, e.g. ``&quot;SQM@PM6-ORG&quot;`` or ``&quot;MOPAC:SQM@PM6-ORG&quot;``.</span>
+<span class="sd">        A level spec, e.g. ``"SQM@PM6-ORG"`` or ``"MOPAC:SQM@PM6-ORG"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -598,41 +597,41 @@
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
 <span class="sd">        If the ``@`` separating type from method is missing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># An owner &#39;:&#39; precedes the &#39;type@method&#39;; the only other &#39;:&#39; allowed in a</span>
-    <span class="c1"># level spec is the &#39;bse:&#39; prefix on a basis, which comes after the &#39;@&#39;. So a</span>
-    <span class="c1"># &#39;:&#39; is an owner separator only when it occurs before the first &#39;@&#39;.</span>
-    <span class="n">at</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
-    <span class="n">colon</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="c1"># An owner ':' precedes the 'type@method'; the only other ':' allowed in a</span>
+    <span class="c1"># level spec is the 'bse:' prefix on a basis, which comes after the '@'. So a</span>
+    <span class="c1"># ':' is an owner separator only when it occurs before the first '@'.</span>
+    <span class="n">at</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@"</span><span class="p">)</span>
+    <span class="n">colon</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">colon</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">colon</span> <span class="o">&lt;</span> <span class="n">at</span><span class="p">):</span>
-        <span class="n">owner</span><span class="p">,</span> <span class="n">theory</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">_check_token</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;owner&quot;</span><span class="p">)</span>
+        <span class="n">owner</span><span class="p">,</span> <span class="n">theory</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">_check_token</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">"owner"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">owner</span><span class="p">,</span> <span class="n">theory</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">text</span>
 
-    <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">theory</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">theory</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; is not a valid level spec: missing the &#39;@method&#39; part &quot;</span>
-            <span class="s2">&quot;(no &#39;@&#39; after the type).&quot;</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">' is not a valid level spec: missing the '@method' part "</span>
+            <span class="s2">"(no '@' after the type)."</span>
         <span class="p">)</span>
-    <span class="n">type_</span><span class="p">,</span> <span class="n">method_cluster</span> <span class="o">=</span> <span class="n">theory</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">type_</span><span class="p">,</span> <span class="n">method_cluster</span> <span class="o">=</span> <span class="n">theory</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"@"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">method_cluster</span><span class="p">:</span>
-        <span class="n">method</span><span class="p">,</span> <span class="n">basis_cluster</span> <span class="o">=</span> <span class="n">method_cluster</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">basis_cluster</span><span class="p">:</span>
-            <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="n">basis_cluster</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">method_cluster</span><span class="p">:</span>
+        <span class="n">method</span><span class="p">,</span> <span class="n">basis_cluster</span> <span class="o">=</span> <span class="n">method_cluster</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">in</span> <span class="n">basis_cluster</span><span class="p">:</span>
+            <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="n">basis_cluster</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"@"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="n">basis_cluster</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">method</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span> <span class="o">=</span> <span class="n">method_cluster</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">owner</span><span class="p">,</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">type_</span><span class="p">,</span>
-        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
-        <span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">basis</span><span class="p">,</span>
-        <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span> <span class="n">cutoff</span><span class="p">,</span>
-        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+        <span class="s2">"owner"</span><span class="p">:</span> <span class="n">owner</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="p">:</span> <span class="n">type_</span><span class="p">,</span>
+        <span class="s2">"method"</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+        <span class="s2">"basis"</span><span class="p">:</span> <span class="n">basis</span><span class="p">,</span>
+        <span class="s2">"cutoff"</span><span class="p">:</span> <span class="n">cutoff</span><span class="p">,</span>
+        <span class="s2">"level"</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
     <span class="p">}</span></div>
 
 
@@ -640,7 +639,7 @@
 <div class="viewcode-block" id="parse_model_chemistry">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.grammar.parse_model_chemistry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_model_chemistry</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a full model-chemistry string into its components.</span>
+<span class="w">    </span><span class="sd">"""Parse a full model-chemistry string into its components.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -659,44 +658,44 @@
 <span class="sd">    ValueError</span>
 <span class="sd">        If the ``|`` (driver:task vs. level) or ``driver:`` / ``@`` delimiters</span>
 <span class="sd">        are missing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># &#39;//&#39; has the lowest precedence: split the energy unit from the geometry.</span>
-    <span class="k">if</span> <span class="s2">&quot;//&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
-        <span class="n">energy_text</span><span class="p">,</span> <span class="n">geom_text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="c1"># '//' has the lowest precedence: split the energy unit from the geometry.</span>
+    <span class="k">if</span> <span class="s2">"//"</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="n">energy_text</span><span class="p">,</span> <span class="n">geom_text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"//"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">geometry</span> <span class="o">=</span> <span class="n">parse_model_chemistry</span><span class="p">(</span><span class="n">geom_text</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">energy_text</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">=</span> <span class="n">text</span><span class="p">,</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="s2">&quot;|&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">energy_text</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">"|"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">energy_text</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; is not a valid model chemistry: missing the &#39;|&#39; that &quot;</span>
-            <span class="s2">&quot;separates &#39;driver:task&#39; from the level of theory.&quot;</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">' is not a valid model chemistry: missing the '|' that "</span>
+            <span class="s2">"separates 'driver:task' from the level of theory."</span>
         <span class="p">)</span>
-    <span class="n">task_part</span><span class="p">,</span> <span class="n">level_part</span> <span class="o">=</span> <span class="n">energy_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">task_part</span><span class="p">,</span> <span class="n">level_part</span> <span class="o">=</span> <span class="n">energy_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"|"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task_part</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">":"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task_part</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; is not a valid model chemistry: missing the &#39;driver:&#39; &quot;</span>
-            <span class="s2">&quot;prefix before the task.&quot;</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">' is not a valid model chemistry: missing the 'driver:' "</span>
+            <span class="s2">"prefix before the task."</span>
         <span class="p">)</span>
-    <span class="n">driver</span><span class="p">,</span> <span class="n">task</span> <span class="o">=</span> <span class="n">task_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">&quot;driver&quot;</span><span class="p">)</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span>
+    <span class="n">driver</span><span class="p">,</span> <span class="n">task</span> <span class="o">=</span> <span class="n">task_part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">"driver"</span><span class="p">)</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"task"</span><span class="p">)</span>
 
     <span class="n">level</span> <span class="o">=</span> <span class="n">parse_level</span><span class="p">(</span><span class="n">level_part</span><span class="p">)</span>
 
     <span class="n">parsed</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;driver&quot;</span><span class="p">:</span> <span class="n">driver</span><span class="p">,</span>
-        <span class="s2">&quot;task&quot;</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
-        <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">geometry</span><span class="p">,</span>
+        <span class="s2">"driver"</span><span class="p">:</span> <span class="n">driver</span><span class="p">,</span>
+        <span class="s2">"task"</span><span class="p">:</span> <span class="n">task</span><span class="p">,</span>
+        <span class="s2">"owner"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"owner"</span><span class="p">],</span>
+        <span class="s2">"type"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span>
+        <span class="s2">"method"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span>
+        <span class="s2">"basis"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"basis"</span><span class="p">],</span>
+        <span class="s2">"cutoff"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"cutoff"</span><span class="p">],</span>
+        <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">[</span><span class="s2">"level"</span><span class="p">],</span>
+        <span class="s2">"geometry"</span><span class="p">:</span> <span class="n">geometry</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;comparability_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comparability_key</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span>
+    <span class="n">parsed</span><span class="p">[</span><span class="s2">"comparability_key"</span><span class="p">]</span> <span class="o">=</span> <span class="n">comparability_key</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parsed</span></div>
 
 
@@ -714,7 +713,7 @@
     <span class="n">cutoff</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the canonical model-chemistry string. Inverse of the parser.</span>
+<span class="w">    </span><span class="sd">"""Build the canonical model-chemistry string. Inverse of the parser.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -737,21 +736,21 @@
 <span class="sd">    -------</span>
 <span class="sd">    str</span>
 <span class="sd">        The canonical ``driver:task|[owner:]theory[//&lt;unit&gt;]`` string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">&quot;driver&quot;</span><span class="p">)</span>
-    <span class="n">_check_token</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">"driver"</span><span class="p">)</span>
+    <span class="n">_check_token</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"task"</span><span class="p">)</span>
 
     <span class="n">theory</span> <span class="o">=</span> <span class="n">_compose_theory</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">owner</span> <span class="o">==</span> <span class="n">driver</span><span class="p">:</span>
         <span class="n">level</span> <span class="o">=</span> <span class="n">theory</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_check_token</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">&quot;owner&quot;</span><span class="p">)</span>
-        <span class="n">level</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">owner</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">theory</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">_check_token</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s2">"owner"</span><span class="p">)</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">owner</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">theory</span><span class="si">}</span><span class="s2">"</span>
 
-    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">driver</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">driver</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;//&quot;</span> <span class="o">+</span> <span class="n">compose_model_chemistry</span><span class="p">(</span><span class="o">**</span><span class="n">geometry</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">"//"</span> <span class="o">+</span> <span class="n">compose_model_chemistry</span><span class="p">(</span><span class="o">**</span><span class="n">geometry</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">text</span></div>
 
 
@@ -759,7 +758,7 @@
 <div class="viewcode-block" id="comparability_key">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.grammar.comparability_key">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">comparability_key</span><span class="p">(</span><span class="n">parsed</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the program-free comparability key ``task|theory``.</span>
+<span class="w">    </span><span class="sd">"""Return the program-free comparability key ``task|theory``.</span>
 
 <span class="sd">    Drops ``driver`` and ``owner`` from each unit, so results from different</span>
 <span class="sd">    codes at the same task and level of theory share a key.</span>
@@ -775,14 +774,14 @@
 <span class="sd">    -------</span>
 <span class="sd">    str</span>
 <span class="sd">        ``task|theory`` (or ``task|theory//task|theory`` for a compound).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">theory</span> <span class="o">=</span> <span class="n">_compose_theory</span><span class="p">(</span>
-        <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;basis&quot;</span><span class="p">),</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cutoff&quot;</span><span class="p">)</span>
+        <span class="n">parsed</span><span class="p">[</span><span class="s2">"type"</span><span class="p">],</span> <span class="n">parsed</span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"basis"</span><span class="p">),</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cutoff"</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parsed</span><span class="p">[</span><span class="s1">&#39;task&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">theory</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="n">geometry</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;geometry&quot;</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parsed</span><span class="p">[</span><span class="s1">'task'</span><span class="p">]</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">theory</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"geometry"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">key</span> <span class="o">+=</span> <span class="s2">&quot;//&quot;</span> <span class="o">+</span> <span class="n">comparability_key</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">+=</span> <span class="s2">"//"</span> <span class="o">+</span> <span class="n">comparability_key</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">key</span></div>
 
 </pre></div>
@@ -814,8 +813,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -827,7 +826,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

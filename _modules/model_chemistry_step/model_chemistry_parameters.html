@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -7,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.7.31 documentation</title>
+    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.10.1 documentation</title>
   
   
   
@@ -26,8 +25,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -35,12 +34,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=c224919a" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=fa587e45"></script>
+    <script src="../../_static/documentation_options.js?v=65cfade2"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +51,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.7.31" />
+  <meta name="docsearch:version" content="2026.10.1" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -100,7 +99,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -225,7 +224,7 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -236,15 +235,15 @@
         <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -281,7 +280,7 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
  <i class="fa-solid fa-magnifying-glass"></i>
  <span class="search-button__default-text">Search</span>
  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -393,15 +392,15 @@
           <div class="navbar-item">
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
     <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
     <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
     <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -492,9 +491,9 @@
                   
   <h1>Source code for model_chemistry_step.model_chemistry_parameters</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Control parameters for the Model Chemistry step in a SEAMM flowchart</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seamm</span>
@@ -506,10 +505,10 @@
 <div class="viewcode-block" id="ModelChemistryParameters">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry_parameters.ModelChemistryParameters">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModelChemistryParameters</span><span class="p">(</span><span class="n">seamm</span><span class="o">.</span><span class="n">Parameters</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The control parameters for Model Chemistry.</span>
 
-<span class="sd">    You need to replace the &quot;time&quot; entry in dictionary below these comments with the</span>
+<span class="sd">    You need to replace the "time" entry in dictionary below these comments with the</span>
 <span class="sd">    definitions of parameters to control this step. The keys are parameters for the</span>
 <span class="sd">    current plugin,the values are dictionaries as outlined below.</span>
 
@@ -518,14 +517,14 @@
 <span class="sd">    ::</span>
 
 <span class="sd">        parameters = {</span>
-<span class="sd">            &quot;time&quot;: {</span>
-<span class="sd">                &quot;default&quot;: 100.0,</span>
-<span class="sd">                &quot;kind&quot;: &quot;float&quot;,</span>
-<span class="sd">                &quot;default_units&quot;: &quot;ps&quot;,</span>
-<span class="sd">                &quot;enumeration&quot;: tuple(),</span>
-<span class="sd">                &quot;format_string&quot;: &quot;.1f&quot;,</span>
-<span class="sd">                &quot;description&quot;: &quot;Simulation time:&quot;,</span>
-<span class="sd">                &quot;help_text&quot;: (&quot;The time to simulate in the dynamics run.&quot;)</span>
+<span class="sd">            "time": {</span>
+<span class="sd">                "default": 100.0,</span>
+<span class="sd">                "kind": "float",</span>
+<span class="sd">                "default_units": "ps",</span>
+<span class="sd">                "enumeration": tuple(),</span>
+<span class="sd">                "format_string": ".1f",</span>
+<span class="sd">                "description": "Simulation time:",</span>
+<span class="sd">                "help_text": ("The time to simulate in the dynamics run.")</span>
 <span class="sd">            },</span>
 <span class="sd">        }</span>
 
@@ -534,96 +533,126 @@
 <span class="sd">        Each key of the dictionary is a dictionary that contains the</span>
 <span class="sd">        the following keys:</span>
 
-<span class="sd">    parameters[&quot;default&quot;] :</span>
+<span class="sd">    parameters["default"] :</span>
 <span class="sd">        The default value of the parameter, used to reset it.</span>
 
-<span class="sd">    parameters[&quot;kind&quot;] : enum()</span>
-<span class="sd">        Specifies the kind of a variable. One of  &quot;integer&quot;, &quot;float&quot;, &quot;string&quot;,</span>
-<span class="sd">        &quot;boolean&quot;, or &quot;enum&quot;</span>
+<span class="sd">    parameters["kind"] : enum()</span>
+<span class="sd">        Specifies the kind of a variable. One of  "integer", "float", "string",</span>
+<span class="sd">        "boolean", or "enum"</span>
 
-<span class="sd">        While the &quot;kind&quot; of a variable might be a numeric value, it may still have</span>
+<span class="sd">        While the "kind" of a variable might be a numeric value, it may still have</span>
 <span class="sd">        enumerated custom values meaningful to the user. For instance, if the parameter</span>
-<span class="sd">        is a convergence criterion for an optimizer, custom values like &quot;normal&quot;,</span>
-<span class="sd">        &quot;precise&quot;, etc, might be adequate. In addition, any parameter can be set to a</span>
-<span class="sd">        variable of expression, indicated by having &quot;$&quot; as the first character in the</span>
+<span class="sd">        is a convergence criterion for an optimizer, custom values like "normal",</span>
+<span class="sd">        "precise", etc, might be adequate. In addition, any parameter can be set to a</span>
+<span class="sd">        variable of expression, indicated by having "$" as the first character in the</span>
 <span class="sd">        field. For example, $OPTIMIZER_CONV.</span>
 
-<span class="sd">    parameters[&quot;default_units&quot;] : str</span>
+<span class="sd">    parameters["default_units"] : str</span>
 <span class="sd">        The default units, used for resetting the value.</span>
 
-<span class="sd">    parameters[&quot;enumeration&quot;] : tuple</span>
+<span class="sd">    parameters["enumeration"] : tuple</span>
 <span class="sd">        A tuple of enumerated values.</span>
 
-<span class="sd">    parameters[&quot;format_string&quot;] : str</span>
-<span class="sd">        A format string for &quot;pretty&quot; output.</span>
+<span class="sd">    parameters["format_string"] : str</span>
+<span class="sd">        A format string for "pretty" output.</span>
 
-<span class="sd">    parameters[&quot;description&quot;] : str</span>
+<span class="sd">    parameters["description"] : str</span>
 <span class="sd">        A short string used as a prompt in the GUI.</span>
 
-<span class="sd">    parameters[&quot;help_text&quot;] : str</span>
+<span class="sd">    parameters["help_text"] : str</span>
 <span class="sd">        A longer string to display as help for the user.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    ModelChemistry, TkModelChemistry, ModelChemistryParameters, Model ChemistryStep</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;model_chemistry&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;MOPAC:SQM@PM6-ORG&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default_units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;enumeration&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
-            <span class="s2">&quot;format_string&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Model chemistry:&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help_text&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;The model chemistry to provide to subsequent steps, given as &quot;</span>
-                <span class="s2">&quot;the canonical string &#39;Program:Type@Method[/Basis[@Cutoff]]&#39;. &quot;</span>
-                <span class="s2">&quot;The available choices are discovered from the installed program &quot;</span>
-                <span class="s2">&quot;plug-ins.&quot;</span>
+        <span class="s2">"model_chemistry"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"MOPAC:SQM@PM6-ORG"</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+            <span class="s2">"default_units"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"enumeration"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
+            <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Model chemistry:"</span><span class="p">,</span>
+            <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"The model chemistry to provide to subsequent steps, given as "</span>
+                <span class="s2">"the canonical string 'Program:Type@Method[/Basis[@Cutoff]]'. "</span>
+                <span class="s2">"The available choices are discovered from the installed program "</span>
+                <span class="s2">"plug-ins."</span>
             <span class="p">),</span>
         <span class="p">},</span>
-        <span class="s2">&quot;periodic&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default_units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;enumeration&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;format_string&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Periodic system:&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help_text&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;Whether the model chemistry must support periodic systems. If &quot;</span>
-                <span class="s2">&quot;&#39;yes&#39;, only model chemistries validated for periodic systems &quot;</span>
-                <span class="s2">&quot;are offered.&quot;</span>
+        <span class="s2">"periodic"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"no"</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"enum"</span><span class="p">,</span>
+            <span class="s2">"default_units"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"enumeration"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"yes"</span><span class="p">,</span> <span class="s2">"no"</span><span class="p">),</span>
+            <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">"s"</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Periodic system:"</span><span class="p">,</span>
+            <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"Whether the model chemistry must support periodic systems. If "</span>
+                <span class="s2">"'yes', only model chemistries validated for periodic systems "</span>
+                <span class="s2">"are offered."</span>
             <span class="p">),</span>
         <span class="p">},</span>
-        <span class="s2">&quot;basis elements&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;default_units&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;enumeration&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
-            <span class="s2">&quot;format_string&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Basis elements:&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;help_text&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;GUI-only: the elements (comma-separated symbols) last selected &quot;</span>
-                <span class="s2">&quot;in the basis-set picker, remembered so the picker can be &quot;</span>
-                <span class="s2">&quot;reconstructed. Not used when running; the basis itself is part &quot;</span>
-                <span class="s2">&quot;of the model-chemistry string.&quot;</span>
+        <span class="s2">"basis elements"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+            <span class="s2">"default_units"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"enumeration"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
+            <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Basis elements:"</span><span class="p">,</span>
+            <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"GUI-only: the elements (comma-separated symbols) last selected "</span>
+                <span class="s2">"in the basis-set picker, remembered so the picker can be "</span>
+                <span class="s2">"reconstructed. Not used when running; the basis itself is part "</span>
+                <span class="s2">"of the model-chemistry string."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="c1"># # Results handling ... uncomment if needed</span>
-        <span class="c1"># &quot;results&quot;: {</span>
-        <span class="c1">#     &quot;default&quot;: {},</span>
-        <span class="c1">#     &quot;kind&quot;: &quot;dictionary&quot;,</span>
-        <span class="c1">#     &quot;default_units&quot;: &quot;&quot;,</span>
-        <span class="c1">#     &quot;enumeration&quot;: tuple(),</span>
-        <span class="c1">#     &quot;format_string&quot;: &quot;&quot;,</span>
-        <span class="c1">#     &quot;description&quot;: &quot;results&quot;,</span>
-        <span class="c1">#     &quot;help_text&quot;: &quot;The results to save to variables or in tables.&quot;,</span>
+        <span class="c1"># "results": {</span>
+        <span class="c1">#     "default": {},</span>
+        <span class="c1">#     "kind": "dictionary",</span>
+        <span class="c1">#     "default_units": "",</span>
+        <span class="c1">#     "enumeration": tuple(),</span>
+        <span class="c1">#     "format_string": "",</span>
+        <span class="c1">#     "description": "results",</span>
+        <span class="c1">#     "help_text": "The results to save to variables or in tables.",</span>
         <span class="c1"># },</span>
     <span class="p">}</span>
 
+    <span class="c1"># Rules shared by the dialog and the flowchart builder (see seamm.Parameters)</span>
+
+<div class="viewcode-block" id="ModelChemistryParameters.problems">
+<a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry_parameters.ModelChemistryParameters.problems">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">problems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The model chemistry must be one the installed programs offer (the basis</span>
+<span class="sd">        is a free choice), as the step checks when it runs."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.model_chemistry</span><span class="w"> </span><span class="kn">import</span> <span class="n">availability_problem</span><span class="p">,</span> <span class="n">discover_model_chemistries</span>
+
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_values</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">problems</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model_chemistry"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">selected</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_expr</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">result</span>  <span class="c1"># resolved when the flowchart runs</span>
+        <span class="n">periodic</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"periodic"</span><span class="p">,</span> <span class="s2">"no"</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"yes"</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">periodic</span><span class="p">,)</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">ModelChemistryParameters</span><span class="o">.</span><span class="n">_available</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">discover_model_chemistries</span><span class="p">(</span><span class="n">periodic_only</span><span class="o">=</span><span class="n">periodic</span><span class="p">)</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">availability_problem</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">periodic</span><span class="o">=</span><span class="n">periodic</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">problem</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="n">_available</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># discovered model chemistries, by (periodic,)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{},</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize the parameters, by default with the parameters defined above</span>
 
 <span class="sd">        Parameters</span>
@@ -638,9 +667,9 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ModelChemistryParameters.__init__&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"ModelChemistryParameters.__init__"</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">ModelChemistryParameters</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">defaults</span><span class="p">},</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span>
@@ -675,8 +704,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -688,7 +717,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>
