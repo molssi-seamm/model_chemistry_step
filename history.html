@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>History &#8212; SEAMM Model Chemistry Plug-in 2026.10.1 documentation</title>
+    <title>History &#8212; SEAMM Model Chemistry Plug-in 2026.10.3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="_static/documentation_options.js?v=65cfade2"></script>
+    <script src="_static/documentation_options.js?v=f64fa391"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -53,7 +53,7 @@
     <link rel="prev" title="Development Team" href="authors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.1" />
+  <meta name="docsearch:version" content="2026.10.3" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -510,6 +510,15 @@
   <section id="history">
 <h1>History<a class="headerlink" href="#history" title="Link to this heading">#</a></h1>
 <dl class="simple">
+<dt>2026.10.3 – Bugfix: MDI engines ran the advertised basis instead of the chosen one</dt><dd><ul class="simple">
+<li><p>A model chemistry whose basis is not one of the few a program advertises
+(e.g. <code class="docutils literal notranslate"><span class="pre">ORCA:DFT&#64;B3LYP/def2-TZVP</span></code>) kept the advertised example’s basis for
+steps that drive the program as an MDI engine (the Energy step, the Dimer
+Builder’s energy contact search, Normal Mode Sampling, LAMMPS QM/MD), so
+ORCA ran def2-SVP whatever basis was chosen. The engine now gets the
+chosen basis.</p></li>
+</ul>
+</dd>
 <dt>2026.10.1 – A model chemistry no installed program offers is refused when built</dt><dd><ul class="simple">
 <li><p>The check that a model chemistry is offered by an installed program (ignoring the
 basis set, which is a free choice) is now shared with SEAMM’s flowchart tools, so
