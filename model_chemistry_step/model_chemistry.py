@@ -193,6 +193,12 @@ def match_model_chemistry(selected, available):
             model_chemistry["basis"] = sel["basis"]
             model_chemistry["cutoff"] = sel["cutoff"]
             model_chemistry["level"] = selected
+            # The options are the offering's, but the basis an MDI engine is
+            # launched with must be the user's, not the advertised example.
+            options = dict(wrapper.get("options") or {})
+            if options.get("mdi_basis_arg") is not None and sel["basis"]:
+                options["mdi_basis_arg"] = sel["basis"]
+            model_chemistry["options"] = options
             return model_chemistry
     return None
 

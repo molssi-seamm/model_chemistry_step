@@ -179,6 +179,47 @@ def test_match_ignoring_basis_accepts_a_user_chosen_basis():
     assert node._match_ignoring_basis("ORCA:DFT@B3LYP/def2-SVP", available) is None
 
 
+def test_match_launches_the_mdi_engine_with_the_users_basis():
+    """The offering's mdi_basis_arg is its advertised example; the match must
+    carry the user's basis there, or an MDI engine runs the wrong basis."""
+    node = ModelChemistry()
+    offering = {
+        "owner": "ORCA",
+        "type": "DFT",
+        "method": "B3LYP",
+        "basis": "def2-SVP",
+        "cutoff": None,
+        "level": "ORCA:DFT@B3LYP/def2-SVP",
+        "step": "orca",
+        "options": {
+            "mdi_capable": True,
+            "mdi_method_arg": "B3LYP",
+            "mdi_basis_arg": "def2-SVP",
+        },
+    }
+    available = {offering["level"]: offering}
+    mc = node._match_ignoring_basis("ORCA:DFT@B3LYP/def2-TZVP", available)
+    assert mc["options"]["mdi_basis_arg"] == "def2-TZVP"
+    assert mc["options"]["mdi_method_arg"] == "B3LYP"
+    mc = node._match_ignoring_basis("ORCA:DFT@B3LYP/bse:def2-TZVPD", available)
+    assert mc["options"]["mdi_basis_arg"] == "bse:def2-TZVPD"
+    # The offering itself is not changed
+    assert offering["options"]["mdi_basis_arg"] == "def2-SVP"
+    # Methods without a basis (MOPAC, MLFFs) are left alone
+    mopac = {
+        "owner": "MOPAC",
+        "type": "SQM",
+        "method": "PM6",
+        "basis": None,
+        "cutoff": None,
+        "level": "MOPAC:SQM@PM6",
+        "step": "mopac",
+        "options": {"mdi_capable": True, "mdi_method_arg": "PM6"},
+    }
+    mc = node._match_ignoring_basis("MOPAC:SQM@PM6", {mopac["level"]: mopac})
+    assert "mdi_basis_arg" not in mc["options"]
+
+
 def test_filter_flags_are_forwarded_to_providers(monkeypatch):
     """periodic_only / mdi_only are passed straight through to each provider's
     get_model_chemistry_options()."""

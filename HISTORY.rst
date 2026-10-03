@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.3 -- Bugfix: MDI engines ran the advertised basis instead of the chosen one
+    * A model chemistry whose basis is not one of the few a program advertises
+      (e.g. ``ORCA:DFT@B3LYP/def2-TZVP``) kept the advertised example's basis for
+      steps that drive the program as an MDI engine (the Energy step, the Dimer
+      Builder's energy contact search, Normal Mode Sampling, LAMMPS QM/MD), so
+      ORCA ran def2-SVP whatever basis was chosen. The engine now gets the
+      chosen basis.
 
 2026.10.1 -- A model chemistry no installed program offers is refused when built
     * The check that a model chemistry is offered by an installed program (ignoring the
