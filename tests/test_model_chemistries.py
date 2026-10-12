@@ -344,3 +344,53 @@ def test_grammar_is_reexported_from_the_package():
     assert hasattr(model_chemistry_step, "parse_model_chemistry")
     assert hasattr(model_chemistry_step, "compose_model_chemistry")
     assert hasattr(model_chemistry_step, "comparability_key")
+
+
+# --------------------------------------------------------------------------- #
+# The data path, for providers that take it (the Forcefield step)
+# --------------------------------------------------------------------------- #
+
+
+def test_data_path_goes_only_to_providers_that_take_it(monkeypatch):
+    seen = []
+
+    class _TakesDataPath:
+        @classmethod
+        def get_model_chemistry_options(
+            cls, periodic_only=False, mdi_only=False, data_path=None
+        ):
+            seen.append(data_path)
+            return {"x": _option("FF@X")}
+
+    old = _provider({"y": _option("FOO:SQM@Y")})
+    _patch_namespace(monkeypatch, [_Ext("ff", _TakesDataPath), _Ext("foo", old)])
+    found = mc_module.discover_model_chemistries(data_path=["/job/data"])
+    assert set(found) == {"FF@X", "FOO:SQM@Y"}
+    assert seen == [["/job/data"]]
+    assert found["FF@X"]["owner"] is None
+
+
+def test_the_data_files_come_from_the_offering_step(monkeypatch):
+    """A local forcefield must go with a submitted job: the Model Chemistry step
+    asks the step offering the selection for its files."""
+    import types
+
+    class _Forcefield:
+        @classmethod
+        def get_model_chemistry_options(cls, periodic_only=False, mdi_only=False):
+            return {"x": _option("FF@X", file="local:x.frc")}
+
+        @classmethod
+        def model_chemistry_data_files(cls, model_chemistry, node):
+            return [("data:Forcefields/x.frc", model_chemistry["options"]["file"])]
+
+    _patch_namespace(monkeypatch, [_Ext("Forcefield", _Forcefield)])
+    step = ModelChemistry()
+    step.flowchart = types.SimpleNamespace(
+        plugin_manager=types.SimpleNamespace(get=lambda name: _Forcefield),
+        data_path=None,
+    )
+    step.parameters["model_chemistry"].value = "FF@X"
+    assert step.list_data_files() == [("data:Forcefields/x.frc", "local:x.frc")]
+    step.parameters["model_chemistry"].value = "$mc"
+    assert step.list_data_files() == []

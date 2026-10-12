@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.12 -- Forcefields as model chemistries
+    * Forcefields (``FF@OPLS-AA``, ``ReaxFF@CHO_cho_2008``), offered by the Forcefield
+      plug-in, can be selected. They have no program, so the dialog shows no Program for
+      them.
+    * A model chemistry's files, such as a forcefield from your own data directory, are
+      sent with a job submitted to a JobServer, and found there when it runs.
+
 2026.10.3 -- Bugfix: MDI engines ran the advertised basis instead of the chosen one
     * A model chemistry whose basis is not one of the few a program advertises
       (e.g. ``ORCA:DFT@B3LYP/def2-TZVP``) kept the advertised example's basis for
