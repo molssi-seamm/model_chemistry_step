@@ -542,25 +542,25 @@ def test_ok_in_direct_entry_mode_ignores_the_picker_selectors(monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
-# Levels with no program: forcefields (FF@OPLS-AA), evaluated by the driver
+# Levels with no program: forcefields (FF@oplsaa), evaluated by the driver
 # --------------------------------------------------------------------------- #
 
 WITH_FORCEFIELDS = {
     **SAMPLE,
-    "FF@OPLS-AA": _wrap("FF@OPLS-AA", "Forcefield"),
+    "FF@oplsaa": _wrap("FF@oplsaa", "Forcefield"),
     "ReaxFF@CHO_cho_2008": _wrap("ReaxFF@CHO_cho_2008", "Forcefield"),
 }
 
 
 def test_a_level_with_no_program_has_no_program_to_choose():
     fs = _FakeTk(WITH_FORCEFIELDS)
-    assert TkModelChemistry._programs(fs, "FF", "OPLS-AA") == []
-    assert TkModelChemistry._ownerless(fs, "FF", "OPLS-AA")
+    assert TkModelChemistry._programs(fs, "FF", "oplsaa") == []
+    assert TkModelChemistry._ownerless(fs, "FF", "oplsaa")
     assert not TkModelChemistry._ownerless(fs, "SQM", "PM6-ORG")
-    assert not TkModelChemistry._ownerless(fs, "$type", "OPLS-AA")
-    TkModelChemistry._cascade(fs, "FF", "OPLS-AA", None)
+    assert not TkModelChemistry._ownerless(fs, "$type", "oplsaa")
+    TkModelChemistry._cascade(fs, "FF", "oplsaa", None)
     assert fs["program"].get() == "" and fs["program"].values == []
-    assert TkModelChemistry._compose_from_picker(fs) == ("FF@OPLS-AA", "")
+    assert TkModelChemistry._compose_from_picker(fs) == ("FF@oplsaa", "")
 
 
 def test_a_level_with_a_program_still_needs_one():

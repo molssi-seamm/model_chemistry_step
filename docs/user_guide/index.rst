@@ -32,7 +32,7 @@ part of that check.
 Forcefields
 ===========
 
-Forcefields are model chemistries too, offered by the Forcefield plug-in: ``FF@OPLS-AA``
+Forcefields are model chemistries too, offered by the Forcefield plug-in: ``FF@oplsaa``
 for a classical forcefield and ``ReaxFF@CHO_cho_2008`` for a ReaxFF parameter set. They
 have no program, since the step that uses them -- LAMMPS, or Packmol to type the
 molecules it packs -- evaluates them itself, so the dialog shows no **Program** for them.

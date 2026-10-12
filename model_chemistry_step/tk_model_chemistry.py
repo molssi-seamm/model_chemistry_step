@@ -238,7 +238,7 @@ class TkModelChemistry(seamm.TkNode):
         else:
             shown = ["periodic", "type", "method"]
             keys = ["type", "method"]
-            # A level with no program (FF@OPLS-AA: the driver, e.g. LAMMPS,
+            # A level with no program (FF@oplsaa: the driver, e.g. LAMMPS,
             # evaluates it itself) has no Program to choose.
             if not self._ownerless(self["type"].get(), self["method"].get()):
                 keys.append("program")
@@ -388,7 +388,7 @@ class TkModelChemistry(seamm.TkNode):
 
     def _ownerless(self, type_, method):
         """Whether ``type_@method`` is offered with no program, as a forcefield
-        (``FF@OPLS-AA``) is: the driver evaluates it itself."""
+        (``FF@oplsaa``) is: the driver evaluates it itself."""
         if self.is_expr(type_) or self.is_expr(method):
             return False
         offered = [

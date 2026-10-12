@@ -2,7 +2,7 @@
 History
 =======
 2026.10.12 -- Forcefields as model chemistries
-    * Forcefields (``FF@OPLS-AA``, ``ReaxFF@CHO_cho_2008``), offered by the Forcefield
+    * Forcefields (``FF@oplsaa``, ``ReaxFF@CHO_cho_2008``), offered by the Forcefield
       plug-in, can be selected. They have no program, so the dialog shows no Program for
       them.
     * A model chemistry's files, such as a forcefield from your own data directory, are
