@@ -7,6 +7,9 @@ History
       them.
     * A model chemistry's files, such as a forcefield from your own data directory, are
       sent with a job submitted to a JobServer, and found there when it runs.
+    * ORCA's Hartree-Fock and MP2 are now wavefunction (QC) methods: ``ORCA:QC@HF/...``
+      and ``ORCA:QC@MP2/...``. The old names, ``ORCA:HF@...`` and ``ORCA:MP2@...``, are
+      still accepted with a warning, and shown under the new name in the dialog.
 
 2026.10.3 -- Bugfix: MDI engines ran the advertised basis instead of the chosen one
     * A model chemistry whose basis is not one of the few a program advertises

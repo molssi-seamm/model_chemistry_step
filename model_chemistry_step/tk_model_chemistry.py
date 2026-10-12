@@ -40,6 +40,7 @@ import seamm
 import seamm_widgets as sw
 
 from .grammar import parse_level
+from .model_chemistry import renamed_level
 
 logger = logging.getLogger(__name__)
 
@@ -527,6 +528,8 @@ class TkModelChemistry(seamm.TkNode):
         since the picker would otherwise silently show unrelated defaults.
         """
         selected = self.node.parameters["model_chemistry"].value
+        # A level with a renamed type (HF@, MP2@) is shown under its new name
+        selected = renamed_level(selected) or selected
         self["model_chemistry"].set(selected if isinstance(selected, str) else "")
 
         type_, method, program, basis = self._decompose(selected)

@@ -224,12 +224,38 @@ def match_model_chemistry(selected, available):
     return None
 
 
+#: Model-chemistry types that were renamed, old -> new. A level with an old type
+#: is accepted with a warning, as the new one, until flowcharts are converted:
+#: ORCA's Hartree-Fock and MP2 are wavefunction (QC) methods (2026-10-12).
+RENAMED_TYPES = {"HF": "QC", "MP2": "QC"}
+
+
+def renamed_level(level):
+    """The level with a renamed type replaced by its new name
+    (``ORCA:HF@HF/def2-SVP`` -> ``ORCA:QC@HF/def2-SVP``), or None if its type
+    was not renamed (or it does not parse)."""
+    if not isinstance(level, str):
+        return None
+    try:
+        parsed = parse_level(level)
+    except ValueError:
+        return None
+    new = RENAMED_TYPES.get(parsed["type"])
+    if new is None:
+        return None
+    prefix = f"{parsed['owner']}:" if parsed["owner"] else ""
+    rest = level.strip()[len(prefix) + len(parsed["type"]) + 1 :]
+    return f"{prefix}{new}@{rest}"
+
+
 def availability_problem(selected, available, periodic=False):
     """Why a model chemistry is not available, or '' if it is.
 
     Shared by the step's run-time check and its parameters' rules, which the
-    flowchart builder uses.
+    flowchart builder uses. A level with a renamed type (see
+    :data:`RENAMED_TYPES`) is checked under its new name.
     """
+    selected = renamed_level(selected) or selected
     if selected in available or match_model_chemistry(selected, available):
         return ""
     if len(available) == 0:
@@ -424,6 +450,18 @@ class ModelChemistry(seamm.Node):
                 )
             )
             selected = resolved
+
+        # A type that has been renamed (HF@ and MP2@ are now QC@)
+        renamed = renamed_level(selected)
+        if renamed is not None:
+            printer.important(
+                __(
+                    f"Warning: '{selected}' is the old name of '{renamed}'; please "
+                    "update the flowchart, which will refuse the old name in future.",
+                    indent=self.indent + 4 * " ",
+                )
+            )
+            selected = renamed
 
         # Discover what the installed program plug-ins offer, then validate the
         # selection against it before publishing it for downstream steps.
