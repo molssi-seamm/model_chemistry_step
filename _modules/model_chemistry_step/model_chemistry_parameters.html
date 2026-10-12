@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.10.12 documentation</title>
+    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.10.12.1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=a6df0ad7"></script>
+    <script src="../../_static/documentation_options.js?v=0f4eb122"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +52,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.12" />
+  <meta name="docsearch:version" content="2026.10.12.1" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -610,6 +610,34 @@
                 <span class="s2">"of the model-chemistry string."</span>
             <span class="p">),</span>
         <span class="p">},</span>
+        <span class="s2">"checkpoint"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+            <span class="s2">"default_units"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"enumeration"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
+            <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Checkpoint:"</span><span class="p">,</span>
+            <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"For a machine-learned forcefield (MLFF): the model's checkpoint "</span>
+                <span class="s2">"file, to use it rather than a model found in the model "</span>
+                <span class="s2">"directories -- e.g. one written during training. A path, "</span>
+                <span class="s2">"relative to the job's directory unless absolute, or a "</span>
+                <span class="s2">"$variable. Empty uses the model chosen above."</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="s2">"engine options"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"default"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+            <span class="s2">"default_units"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"enumeration"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(),</span>
+            <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Engine options:"</span><span class="p">,</span>
+            <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"For a machine-learned forcefield (MLFF): options for its engine "</span>
+                <span class="s2">"in this run, e.g. '--eeq-reuse' or "</span>
+                <span class="s2">"'--dispersion </span><span class="se">\"</span><span class="s2">{regime: large}</span><span class="se">\"</span><span class="s2">' for xnn."</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
         <span class="c1"># # Results handling ... uncomment if needed</span>
         <span class="c1"># "results": {</span>
         <span class="c1">#     "default": {},</span>
@@ -623,6 +651,46 @@
     <span class="p">}</span>
 
     <span class="c1"># Rules shared by the dialog and the flowchart builder (see seamm.Parameters)</span>
+
+    <span class="c1">#: Parameters that apply only to a machine-learned forcefield</span>
+    <span class="n">MLFF_ONLY</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"checkpoint"</span><span class="p">,</span> <span class="s2">"engine options"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_mlff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Whether the model chemistry is an MLFF (or a $variable, which might</span>
+<span class="sd">        be)."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_level</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selected</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">selected</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">""</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_expr</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">parse_level</span><span class="p">(</span><span class="n">selected</span><span class="p">)[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"MLFF"</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="ModelChemistryParameters.applies">
+<a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry_parameters.ModelChemistryParameters.applies">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">applies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_seen</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The checkpoint and engine options apply only to an MLFF."""</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_values</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">applies</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">_seen</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MLFF_ONLY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mlff</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model_chemistry"</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="ModelChemistryParameters.not_applicable_reason">
+<a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry_parameters.ModelChemistryParameters.not_applicable_reason">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">not_applicable_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_values</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MLFF_ONLY</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mlff</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model_chemistry"</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="s2">"it is only for a machine-learned forcefield (MLFF)"</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">not_applicable_reason</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ModelChemistryParameters.problems">
 <a class="viewcode-back" href="../../api/model_chemistry_step.html#model_chemistry_step.model_chemistry_parameters.ModelChemistryParameters.problems">[docs]</a>
@@ -639,6 +707,8 @@
             <span class="k">return</span> <span class="n">result</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_expr</span><span class="p">(</span><span class="n">selected</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">result</span>  <span class="c1"># resolved when the flowchart runs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mlff</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"checkpoint"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">result</span>  <span class="c1"># a checkpoint by path is checked when it runs</span>
         <span class="n">periodic</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"periodic"</span><span class="p">,</span> <span class="s2">"no"</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"yes"</span>
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">periodic</span><span class="p">,)</span>
         <span class="n">cache</span> <span class="o">=</span> <span class="n">ModelChemistryParameters</span><span class="o">.</span><span class="n">_available</span>
