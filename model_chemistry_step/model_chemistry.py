@@ -2,6 +2,7 @@
 
 """Non-graphical part of the Model Chemistry step in a SEAMM flowchart"""
 
+import inspect
 import logging
 import importlib.resources
 import pprint
@@ -96,7 +97,18 @@ def resolve_level(selected, context):
     return f"{owner}:{level}" if owner else level
 
 
-def discover_model_chemistries(periodic_only=False, mdi_only=False):
+def _accepts(function, name):
+    """Whether ``function`` takes the keyword argument ``name``."""
+    try:
+        parameters = inspect.signature(function).parameters
+    except (TypeError, ValueError):
+        return False
+    return name in parameters or any(
+        p.kind == inspect.Parameter.VAR_KEYWORD for p in parameters.values()
+    )
+
+
+def discover_model_chemistries(periodic_only=False, mdi_only=False, data_path=None):
     """Discover the model chemistries offered by the installed program steps.
 
     Each program plug-in (e.g. ``mopac_step``) may expose a
@@ -111,6 +123,12 @@ def discover_model_chemistries(periodic_only=False, mdi_only=False):
         Only return model chemistries validated for periodic systems.
     mdi_only : bool
         Only return model chemistries launchable via MDI.
+    data_path : [pathlib.Path], optional
+        Where a running flowchart finds data files (``Node.data_path``: a job's
+        own ``data/`` directory, then the user's and the installation's), for the
+        steps whose ``get_model_chemistry_options()`` takes it -- e.g. the
+        Forcefield step, which offers the forcefields it finds there, so a job
+        sees the ``local:`` and ``personal:`` forcefields sent with it.
 
     Returns
     -------
@@ -142,8 +160,11 @@ def discover_model_chemistries(periodic_only=False, mdi_only=False):
         getter = getattr(ext.plugin, "get_model_chemistry_options", None)
         if getter is None:
             continue
+        kwargs = {"periodic_only": periodic_only, "mdi_only": mdi_only}
+        if data_path is not None and _accepts(getter, "data_path"):
+            kwargs["data_path"] = data_path
         try:
-            options = getter(periodic_only=periodic_only, mdi_only=mdi_only)
+            options = getter(**kwargs)
         except Exception as e:
             logger.warning("%s.get_model_chemistry_options() failed: %s", ext.name, e)
             continue
@@ -203,12 +224,38 @@ def match_model_chemistry(selected, available):
     return None
 
 
+#: Model-chemistry types that were renamed, old -> new. A level with an old type
+#: is accepted with a warning, as the new one, until flowcharts are converted:
+#: ORCA's Hartree-Fock and MP2 are wavefunction (QC) methods (2026-10-12).
+RENAMED_TYPES = {"HF": "QC", "MP2": "QC"}
+
+
+def renamed_level(level):
+    """The level with a renamed type replaced by its new name
+    (``ORCA:HF@HF/def2-SVP`` -> ``ORCA:QC@HF/def2-SVP``), or None if its type
+    was not renamed (or it does not parse)."""
+    if not isinstance(level, str):
+        return None
+    try:
+        parsed = parse_level(level)
+    except ValueError:
+        return None
+    new = RENAMED_TYPES.get(parsed["type"])
+    if new is None:
+        return None
+    prefix = f"{parsed['owner']}:" if parsed["owner"] else ""
+    rest = level.strip()[len(prefix) + len(parsed["type"]) + 1 :]
+    return f"{prefix}{new}@{rest}"
+
+
 def availability_problem(selected, available, periodic=False):
     """Why a model chemistry is not available, or '' if it is.
 
     Shared by the step's run-time check and its parameters' rules, which the
-    flowchart builder uses.
+    flowchart builder uses. A level with a renamed type (see
+    :data:`RENAMED_TYPES`) is checked under its new name.
     """
+    selected = renamed_level(selected) or selected
     if selected in available or match_model_chemistry(selected, available):
         return ""
     if len(available) == 0:
@@ -326,8 +373,40 @@ class ModelChemistry(seamm.Node):
         See discover_model_chemistries(), which this calls.
         """
         return discover_model_chemistries(
-            periodic_only=periodic_only, mdi_only=mdi_only
+            periodic_only=periodic_only,
+            mdi_only=mdi_only,
+            data_path=self._data_path(),
         )
+
+    def _data_path(self):
+        """The flowchart's data path, or None if it has none (e.g. in the editor)."""
+        try:
+            return self.data_path
+        except Exception:
+            return None
+
+    def list_data_files(self):
+        """The data files the selected model chemistry needs, such as a ``local:``
+        or ``personal:`` forcefield, from the step that offers it
+        (``model_chemistry_data_files()``), so they go with a submitted job."""
+        selected = self.parameters["model_chemistry"].value
+        if not isinstance(selected, str) or self.is_expr(selected):
+            return []
+        try:
+            available = self.model_chemistries()
+            model_chemistry = available.get(selected) or self._match_ignoring_basis(
+                selected, available
+            )
+            if model_chemistry is None:
+                return []
+            provider = self.flowchart.plugin_manager.get(model_chemistry["step"])
+        except Exception as e:
+            logger.warning(f"Could not find the files for {selected}: {e}")
+            return []
+        getter = getattr(provider, "model_chemistry_data_files", None)
+        if getter is None:
+            return []
+        return getter(model_chemistry, self)
 
     def _match_ignoring_basis(self, selected, available):
         """See match_model_chemistry()."""
@@ -371,6 +450,18 @@ class ModelChemistry(seamm.Node):
                 )
             )
             selected = resolved
+
+        # A type that has been renamed (HF@ and MP2@ are now QC@)
+        renamed = renamed_level(selected)
+        if renamed is not None:
+            printer.important(
+                __(
+                    f"Warning: '{selected}' is the old name of '{renamed}'; please "
+                    "update the flowchart, which will refuse the old name in future.",
+                    indent=self.indent + 4 * " ",
+                )
+            )
+            selected = renamed
 
         # Discover what the installed program plug-ins offer, then validate the
         # selection against it before publishing it for downstream steps.

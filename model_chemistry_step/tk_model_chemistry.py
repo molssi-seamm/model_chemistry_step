@@ -40,6 +40,7 @@ import seamm
 import seamm_widgets as sw
 
 from .grammar import parse_level
+from .model_chemistry import renamed_level
 
 logger = logging.getLogger(__name__)
 
@@ -235,8 +236,14 @@ class TkModelChemistry(seamm.TkNode):
             shown = ["periodic", "model_chemistry"]
             row += 1
         else:
-            shown = ["periodic", "type", "method", "program"]
-            for key in ("type", "method", "program"):
+            shown = ["periodic", "type", "method"]
+            keys = ["type", "method"]
+            # A level with no program (FF@oplsaa: the driver, e.g. LAMMPS,
+            # evaluates it itself) has no Program to choose.
+            if not self._ownerless(self["type"].get(), self["method"].get()):
+                keys.append("program")
+                shown.append("program")
+            for key in keys:
                 self[key].grid(row=row, column=0, sticky=tk.EW)
                 row += 1
 
@@ -271,13 +278,14 @@ class TkModelChemistry(seamm.TkNode):
         type_ = self["type"].get()
         method = self["method"].get()
         program = self["program"].get()
-        if not (type_ and method and program):
+        ownerless = self._ownerless(type_, method)
+        if not (type_ and method and (program or ownerless)):
             return "", ""
         # The owner/type/method must be one a program offers (run() validates
         # this); the basis is the user's free choice. Whether a basis applies
         # cannot be discovered when type/method is a $variable, so include
         # whatever basis is entered in that case too.
-        level = f"{program}:{type_}@{method}"
+        level = f"{type_}@{method}" if ownerless else f"{program}:{type_}@{method}"
         elements = ""
         if (
             self.is_expr(type_)
@@ -368,13 +376,27 @@ class TkModelChemistry(seamm.TkNode):
         )
 
     def _programs(self, type_, method):
+        """The programs offering ``type_@method``, those with no program left
+        out (see :meth:`_ownerless`)."""
         return sorted(
             {
                 w["owner"]
                 for w in self._model_chemistries.values()
-                if w["type"] == type_ and w["method"] == method
+                if w["type"] == type_ and w["method"] == method and w["owner"]
             }
         )
+
+    def _ownerless(self, type_, method):
+        """Whether ``type_@method`` is offered with no program, as a forcefield
+        (``FF@oplsaa``) is: the driver evaluates it itself."""
+        if self.is_expr(type_) or self.is_expr(method):
+            return False
+        offered = [
+            w
+            for w in getattr(self, "_model_chemistries", {}).values()
+            if w["type"] == type_ and w["method"] == method
+        ]
+        return bool(offered) and not any(w["owner"] for w in offered)
 
     def _needs_basis(self, type_, method, program):
         """Whether the offered level of theory uses a basis (data-driven: any
@@ -506,6 +528,8 @@ class TkModelChemistry(seamm.TkNode):
         since the picker would otherwise silently show unrelated defaults.
         """
         selected = self.node.parameters["model_chemistry"].value
+        # A level with a renamed type (HF@, MP2@) is shown under its new name
+        selected = renamed_level(selected) or selected
         self["model_chemistry"].set(selected if isinstance(selected, str) else "")
 
         type_, method, program, basis = self._decompose(selected)
