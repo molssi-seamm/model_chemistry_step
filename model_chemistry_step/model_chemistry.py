@@ -4,6 +4,8 @@
 
 import inspect
 import logging
+from pathlib import Path
+import shlex
 import importlib.resources
 import pprint
 
@@ -408,6 +410,51 @@ class ModelChemistry(seamm.Node):
             return []
         return getter(model_chemistry, self)
 
+    def _from_checkpoint(self, selected, checkpoint, available):
+        """The model chemistry for an MLFF checkpoint given by path: described
+        by the step that offers the program's MLFFs
+        (``model_chemistry_for_checkpoint``), its method the file's name."""
+        owner = parse_level(selected)["owner"]
+        steps = {
+            w["step"]
+            for w in available.values()
+            if w["type"] == "MLFF" and (owner is None or w["owner"] == owner)
+        }
+        if len(steps) != 1:
+            raise ValueError(
+                f"Cannot tell which program should use the checkpoint {checkpoint} "
+                f"for '{selected}': "
+                + (
+                    "no installed step offers machine-learned forcefields"
+                    + (f" from '{owner}'." if owner else ".")
+                    if not steps
+                    else f"several do ({', '.join(sorted(steps))}); name one."
+                )
+            )
+        step = steps.pop()
+        path = Path(checkpoint).expanduser()
+        if not path.is_absolute():
+            path = Path(self.flowchart.root_directory) / path
+        provider = self.flowchart.plugin_manager.get(step)
+        option = provider.model_chemistry_for_checkpoint(path)
+        parsed = parse_level(option["model_chemistry"])
+        printer.important(
+            __(
+                f"Using the checkpoint {path} as '{option['model_chemistry']}'.",
+                indent=self.indent + 4 * " ",
+            )
+        )
+        return {
+            "level": parsed["level"],
+            "owner": parsed["owner"],
+            "type": parsed["type"],
+            "method": parsed["method"],
+            "basis": parsed["basis"],
+            "cutoff": parsed["cutoff"],
+            "step": step,
+            "options": option,
+        }
+
     def _match_ignoring_basis(self, selected, available):
         """See match_model_chemistry()."""
         return match_model_chemistry(selected, available)
@@ -466,7 +513,11 @@ class ModelChemistry(seamm.Node):
         # Discover what the installed program plug-ins offer, then validate the
         # selection against it before publishing it for downstream steps.
         available = self.model_chemistries(periodic_only=periodic, mdi_only=False)
-        if selected in available:
+        checkpoint = str(P.get("checkpoint", "") or "").strip()
+        is_mlff = self.parameters._is_mlff(selected)
+        if checkpoint and is_mlff:
+            model_chemistry = self._from_checkpoint(selected, checkpoint, available)
+        elif selected in available:
             model_chemistry = available[selected]
         else:
             # The exact string is not advertised, but the basis is a free choice
@@ -479,6 +530,19 @@ class ModelChemistry(seamm.Node):
                 raise ValueError(
                     availability_problem(selected, available, periodic=periodic)
                 )
+
+        # The MLFF engine's options for this run (e.g. --eeq-reuse)
+        engine_options = str(P.get("engine options", "") or "").strip()
+        if engine_options and model_chemistry.get("type") == "MLFF":
+            model_chemistry = dict(model_chemistry)
+            model_chemistry["options"] = dict(model_chemistry.get("options") or {})
+            model_chemistry["options"]["engine_args"] = shlex.split(engine_options)
+            printer.important(
+                __(
+                    f"The engine will be run with the options: {engine_options}",
+                    indent=self.indent + 4 * " ",
+                )
+            )
 
         # Publish it as a workspace variable for downstream steps (e.g. LAMMPS),
         # mirroring how the Forcefield step provides "_forcefield".

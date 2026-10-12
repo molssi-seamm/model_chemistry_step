@@ -115,6 +115,34 @@ class ModelChemistryParameters(seamm.Parameters):
                 "of the model-chemistry string."
             ),
         },
+        "checkpoint": {
+            "default": "",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Checkpoint:",
+            "help_text": (
+                "For a machine-learned forcefield (MLFF): the model's checkpoint "
+                "file, to use it rather than a model found in the model "
+                "directories -- e.g. one written during training. A path, "
+                "relative to the job's directory unless absolute, or a "
+                "$variable. Empty uses the model chosen above."
+            ),
+        },
+        "engine options": {
+            "default": "",
+            "kind": "string",
+            "default_units": "",
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Engine options:",
+            "help_text": (
+                "For a machine-learned forcefield (MLFF): options for its engine "
+                "in this run, e.g. '--eeq-reuse' or "
+                "'--dispersion \"{regime: large}\"' for xnn."
+            ),
+        },
         # # Results handling ... uncomment if needed
         # "results": {
         #     "default": {},
@@ -129,6 +157,40 @@ class ModelChemistryParameters(seamm.Parameters):
 
     # Rules shared by the dialog and the flowchart builder (see seamm.Parameters)
 
+    #: Parameters that apply only to a machine-learned forcefield
+    MLFF_ONLY = ("checkpoint", "engine options")
+
+    def _is_mlff(self, selected):
+        """Whether the model chemistry is an MLFF (or a $variable, which might
+        be)."""
+        from .grammar import parse_level
+
+        if not isinstance(selected, str) or selected.strip() == "":
+            return False
+        if self._is_expr(selected):
+            return True
+        try:
+            return parse_level(selected)["type"] == "MLFF"
+        except ValueError:
+            return False
+
+    def applies(self, key, values=None, _seen=None):
+        """The checkpoint and engine options apply only to an MLFF."""
+        if values is None:
+            values = self.current_values()
+        if not super().applies(key, values, _seen):
+            return False
+        if key in self.MLFF_ONLY:
+            return self._is_mlff(values.get("model_chemistry"))
+        return True
+
+    def not_applicable_reason(self, key, values=None):
+        if values is None:
+            values = self.current_values()
+        if key in self.MLFF_ONLY and not self._is_mlff(values.get("model_chemistry")):
+            return "it is only for a machine-learned forcefield (MLFF)"
+        return super().not_applicable_reason(key, values)
+
     def problems(self, values=None):
         """The model chemistry must be one the installed programs offer (the basis
         is a free choice), as the step checks when it runs."""
@@ -142,6 +204,8 @@ class ModelChemistryParameters(seamm.Parameters):
             return result
         if self._is_expr(selected):
             return result  # resolved when the flowchart runs
+        if self._is_mlff(selected) and str(values.get("checkpoint", "")).strip():
+            return result  # a checkpoint by path is checked when it runs
         periodic = str(values.get("periodic", "no")).lower() == "yes"
         key = (periodic,)
         cache = ModelChemistryParameters._available

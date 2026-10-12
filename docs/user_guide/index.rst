@@ -29,6 +29,19 @@ A model chemistry that none of the installed programs offers is refused when the
 flowchart is built, not only when it runs. The basis set is a free choice and is not
 part of that check.
 
+Machine-learned forcefields
+===========================
+
+A machine-learned forcefield, ``xnn:MLFF@<model>``, has two more settings, shown only
+for it:
+
+* **Checkpoint**: the model's checkpoint file, to use instead of the model chosen above
+  -- e.g. one written during training. A path, relative to the job's directory unless
+  absolute, or a variable such as ``$checkpoint``; it must be on the machine where the
+  job runs. Its model chemistry is ``xnn:MLFF@<file stem>``.
+* **Engine options**: options for the model's engine in this run, e.g. ``--eeq-reuse``
+  or ``--dispersion "{regime: large}"`` for xnn.
+
 Forcefields
 ===========
 

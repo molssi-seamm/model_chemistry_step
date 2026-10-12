@@ -1,6 +1,12 @@
 =======
 History
 =======
+2026.10.12.1 -- Machine-learned forcefields: checkpoint and engine options
+    * For a machine-learned forcefield (``xnn:MLFF@...``) the step takes a **Checkpoint**
+      -- a path or variable, e.g. a checkpoint written during training -- and the
+      **Engine options** for the run, e.g. ``--eeq-reuse``. The dialog shows them only
+      for an MLFF.
+
 2026.10.12 -- Forcefields as model chemistries
     * Forcefields (``FF@oplsaa``, ``ReaxFF@CHO_cho_2008``), offered by the Forcefield
       plug-in, can be selected. They have no program, so the dialog shows no Program for
