@@ -189,6 +189,11 @@ class TkModelChemistry(seamm.TkNode):
         self["basis"] = sw.BasisSetField(frame, labeltext="Basis set:")
         self["basis"].elements_callback = self._current_elements
 
+        # For a machine-learned forcefield only: a checkpoint by path, and the
+        # engine's options for the run (real parameters, saved on OK).
+        self["checkpoint"] = P["checkpoint"].widget(frame, width=50)
+        self["engine options"] = P["engine options"].widget(frame, width=50)
+
         # Changing the filter re-discovers; changing a level cascades downward.
         self["periodic"].combobox.bind("<<ComboboxSelected>>", self._filter_changed)
         self["type"].combobox.bind("<<ComboboxSelected>>", self._type_changed)
@@ -260,9 +265,28 @@ class TkModelChemistry(seamm.TkNode):
                 shown.append("basis")
                 row += 1
 
+        # The checkpoint and engine options only for an MLFF
+        if self._mlff_selected():
+            for key in ("checkpoint", "engine options"):
+                self[key].grid(row=row, column=0, sticky=tk.EW)
+                shown.append(key)
+                row += 1
+
         sw.align_labels([self[key] for key in shown], sticky=tk.E)
 
         return row
+
+    def _mlff_selected(self):
+        """Whether the current selection is a machine-learned forcefield."""
+        if self._direct_entry_var.get():
+            selected = self["model_chemistry"].get()
+            if not isinstance(selected, str) or self.is_expr(selected):
+                return False
+            try:
+                return parse_level(selected)["type"] == "MLFF"
+            except ValueError:
+                return False
+        return self["type"].get() == "MLFF"
 
     def _compose_from_picker(self):
         """Compose the canonical level-spec string from the current Type/
