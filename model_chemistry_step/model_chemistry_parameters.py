@@ -123,11 +123,12 @@ class ModelChemistryParameters(seamm.Parameters):
             "format_string": "",
             "description": "Checkpoint:",
             "help_text": (
-                "For a machine-learned forcefield (MLFF): the model's checkpoint "
-                "file, to use it rather than a model found in the model "
-                "directories -- e.g. one written during training. A path, "
+                "For a machine-learned forcefield (MLFF): a checkpoint file or a "
+                "committee's directory, used instead of a model in the model "
+                "directories -- e.g. one trained earlier in this job. A path, "
                 "relative to the job's directory unless absolute, or a "
-                "$variable. Empty uses the model chosen above."
+                "$variable. The model chosen above then only selects the "
+                "program. Empty uses the model chosen above."
             ),
         },
         "engine options": {

@@ -1,6 +1,12 @@
 =======
 History
 =======
+2026.10.14 -- Bugfix: the Checkpoint help did not cover committees
+    * The help for an MLFF's **Checkpoint** and the user guide now say that it may be a
+      committee's directory as well as a checkpoint file, that the model chosen above
+      then only selects the program, and how the model chemistry is named. The guide
+      also describes what a committee is and that it needs the Active Learning step.
+
 2026.10.12.1 -- Machine-learned forcefields: checkpoint and engine options
     * For a machine-learned forcefield (``xnn:MLFF@...``) the step takes a **Checkpoint**
       -- a path or variable, e.g. a checkpoint written during training -- and the
