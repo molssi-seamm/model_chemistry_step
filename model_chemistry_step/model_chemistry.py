@@ -411,9 +411,9 @@ class ModelChemistry(seamm.Node):
         return getter(model_chemistry, self)
 
     def _from_checkpoint(self, selected, checkpoint, available):
-        """The model chemistry for an MLFF checkpoint given by path: described
-        by the step that offers the program's MLFFs
-        (``model_chemistry_for_checkpoint``), its method the file's name."""
+        """The model chemistry for an MLFF checkpoint or committee given by path:
+        described, and named, by the step that offers the program's MLFFs
+        (``model_chemistry_for_checkpoint``)."""
         owner = parse_level(selected)["owner"]
         steps = {
             w["step"]
