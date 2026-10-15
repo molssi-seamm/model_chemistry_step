@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.10.12.1 documentation</title>
+    <title>model_chemistry_step.model_chemistry_parameters &#8212; SEAMM Model Chemistry Plug-in 2026.10.14 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script src="../../_static/documentation_options.js?v=0f4eb122"></script>
+    <script src="../../_static/documentation_options.js?v=c92e1e03"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,7 +52,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2026.10.12.1" />
+  <meta name="docsearch:version" content="2026.10.14" />
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -618,11 +618,12 @@
             <span class="s2">"format_string"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
             <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Checkpoint:"</span><span class="p">,</span>
             <span class="s2">"help_text"</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">"For a machine-learned forcefield (MLFF): the model's checkpoint "</span>
-                <span class="s2">"file, to use it rather than a model found in the model "</span>
-                <span class="s2">"directories -- e.g. one written during training. A path, "</span>
+                <span class="s2">"For a machine-learned forcefield (MLFF): a checkpoint file or a "</span>
+                <span class="s2">"committee's directory, used instead of a model in the model "</span>
+                <span class="s2">"directories -- e.g. one trained earlier in this job. A path, "</span>
                 <span class="s2">"relative to the job's directory unless absolute, or a "</span>
-                <span class="s2">"$variable. Empty uses the model chosen above."</span>
+                <span class="s2">"$variable. The model chosen above then only selects the "</span>
+                <span class="s2">"program. Empty uses the model chosen above."</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="s2">"engine options"</span><span class="p">:</span> <span class="p">{</span>
