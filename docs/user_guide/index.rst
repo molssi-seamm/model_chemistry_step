@@ -55,8 +55,9 @@ for it:
   - a generic ``best.pt`` or ``last.pt``, as training writes, is called after its
     directory, with the start of a hash of the weights, e.g. ``xnn:MLFF@x013_m1-3f9a2c``;
   - a committee is called by its directory's name or, when that is just
-    ``committee``, by its parent's with the start of a hash of its members, e.g.
-    ``xnn:MLFF@1-committee-5c20d7``.
+    ``committee``, after the nearest directory above it that says more, skipping a
+    job's step directories, with the start of a hash of its members, e.g.
+    ``xnn:MLFF@Job_012130-committee-5c20d7`` for ``Job_012130/2/1/committee``.
 
   So the name is that of the weights: retraining in the same place gives a new one.
 * **Engine options**: options for the model's engine in this run, e.g. ``--eeq-reuse``
