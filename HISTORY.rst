@@ -1,6 +1,11 @@
 =======
 History
 =======
+2026.10.16 -- Bugfix: the committee naming in the user guide
+    * The user guide describes the new names of committees given by path in a job
+      (xnn-step 2026.10.16): ``Job_012130/2/1/committee`` is
+      ``xnn:MLFF@Job_012130-committee-5c20d7``.
+
 2026.10.14 -- Bugfix: the Checkpoint help did not cover committees
     * The help for an MLFF's **Checkpoint** and the user guide now say that it may be a
       committee's directory as well as a checkpoint file, that the model chosen above
